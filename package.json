@@ -3,24 +3,55 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 127.0.0.1",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "npx tsx scripts/migrate.ts",
+    "db:seed": "npx tsx scripts/seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "s3:check": "npx tsx scripts/s3-check.ts",
+    "bench:api": "npx tsx scripts/benchmark/run.ts",
+    "bench:api:strict": "npx tsx scripts/benchmark/run.ts --strict",
+    "bench:prod": "npx tsx scripts/benchmark/run.ts --prod",
+    "bench:prod:strict": "npx tsx scripts/benchmark/run.ts --prod --strict",
+    "deploy:aws:build": "bash deploy/aws/build-and-push.sh",
+    "deploy:aws:migrate": "bash deploy/aws/migrate.sh",
+    "deploy:vercel": "bash deploy/vercel/deploy.sh",
+    "deploy:vercel:env": "node deploy/vercel/sync-env.mjs production"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1125.0",
+    "@aws-sdk/s3-request-presigner": "^3.1125.0",
+    "@neon/config": "^1.2.0",
+    "@neon/env": "^1.2.0",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "firebase": "^12.18.0",
+    "firebase-admin": "^14.3.0",
     "next": "16.3.4",
+    "next-intl": "^4.14.2",
+    "postgres": "^3.4.9",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "uuid": "^14.0.2",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.23.13",
+    "typescript": "^5",
+    "vercel": "^59.11.2"
+  },
+  "optionalDependencies": {
+    "@parcel/watcher-darwin-arm64": "^2.6.0"
   }
 }

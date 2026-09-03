@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ward Campaign Platform
 
-## Getting Started
+Hindi-first ward election campaign website with extensible architecture (ports/adapters for DB, OTP, storage, moderation).
 
-First, run the development server:
+## Quick start (local)
 
 ```bash
+# 1. Start Postgres (local) OR link Neon (see below)
+docker-compose up -d postgres
+
+# 2. Configure env
+cp .env.example .env.local
+# For Neon: neon login && neon link --project-id <id> --branch production -y && neon env pull
+
+# 3. Migrate & seed
+npm run db:setup
+
+# 4. Run dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+After pulling code with new database changes, run `npm run db:migrate` before starting the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open http://127.0.0.1:3000/hi
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Dev login:** phone `+919999999999`, OTP `123456` (admin if listed in `ADMIN_PHONES`)
 
-## Learn More
+> **Firebase OTP locally:** set `OTP_ADAPTER` and `NEXT_PUBLIC_OTP_ADAPTER` to `firebase` in `.env.local`. Use `http://127.0.0.1:3000` (not `localhost`) — add `127.0.0.1` to Firebase authorized domains.
 
-To learn more about Next.js, take a look at the following resources:
+## Environment variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Profile | Template | Guide |
+|---------|----------|-------|
+| Local dev | `.env.example` → `.env.local` | **[docs/SETUP.md](docs/SETUP.md)** |
+| Production | `.env.production.example` | **[docs/SETUP.md](docs/SETUP.md)** |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Variable reference: [docs/ENV.md](docs/ENV.md)
 
-## Deploy on Vercel
+## Architecture
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Modular monolith** with hexagonal ports in `src/infrastructure/ports/`
+- Adapters wired in `src/infrastructure/container.ts` via env vars
+- Domain modules in `src/modules/` — no vendor SDK imports
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Swap adapters via env
+
+| Variable | Options | Local default |
+|----------|---------|---------------|
+| `OTP_ADAPTER` / `NEXT_PUBLIC_OTP_ADAPTER` | `mock`, `firebase` | `mock` |
+| `FILE_STORE_ADAPTER` | `local`, `s3` | `local` |
+| `MODERATION_ADAPTER` | `blocklist` | `blocklist` |
+| `DATABASE_URL` | Postgres connection string | — |
+
+### Neon (hosted Postgres)
+
+```bash
+npm i -g neon@latest && neon login
+neon link --project-id <your-project-id> --branch production -y
+neon config init   # once — creates neon.ts
+neon deploy        # apply policy + pull DATABASE_URL into .env.local
+npm run db:setup
+```
+
+Local Docker Postgres: `postgresql://ward:ward@localhost:5432/ward_campaign`
+
+### AWS S3 (issue media uploads)
+
+For local testing with S3, set in `.env.local`:
+
+```env
+FILE_STORE_ADAPTER=s3
+AWS_REGION=ap-south-1
+AWS_S3_BUCKET=your-bucket-name
+AWS_PROFILE=your-aws-profile   # or ACCESS_KEY + SECRET
+```
+
+Verify: `npm run s3:check`
+
+## API latency benchmark
+
+**Local** (requires `npm run dev`):
+
+```bash
+npm run bench:api
+npm run bench:api:strict
+```
+
+**Production** (public APIs only):
+
+```bash
+BENCH_PROD_URL=https://your-domain.com npm run bench:prod
+```
+
+Endpoints and thresholds: `scripts/benchmark/config.ts`
+
+## Deployment
+
+| Target | Guide |
+|--------|-------|
+| **Vercel** (quick prod URL) | [deploy/vercel/README.md](deploy/vercel/README.md) |
+| **AWS ECS** (long-term) | [deploy/aws/README.md](deploy/aws/README.md) |
+| **Local Docker** (mock OTP, local files) | `docker-compose up -d --build` |
+
+```bash
+docker-compose up -d --build
+docker-compose exec app npx tsx scripts/migrate.ts
+docker-compose exec app npx tsx scripts/seed.ts
+```
+
+## Feature flags (admin UI)
+
+- `issues` — ward issues feed (off by default)
+- `petitions` — petitions from beyond-panch issues (off)
+- `content_freeze` — block new suggestions during MCC
+- `public_suggestion_wall` — show approved suggestions publicly
+
+## Project structure
+
+```
+src/
+  infrastructure/ports/     # Interfaces (DatabasePort, OtpPort, FileStorePort, ...)
+  infrastructure/adapters/  # Postgres, Firebase, Local/S3, Blocklist
+  infrastructure/container.ts
+  modules/                  # Identity, Content, Suggestions, Events, ...
+  app/[locale]/             # Hindi-default UI
+  app/api/                  # REST API
+```
+
+See [docs/BLUEPRINT.md](docs/BLUEPRINT.md) for full product blueprint.

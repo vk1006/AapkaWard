@@ -1,0 +1,9 @@
+ALTER TABLE suggestions
+  ADD COLUMN IF NOT EXISTS admin_comment TEXT,
+  ADD COLUMN IF NOT EXISTS admin_comment_by UUID,
+  ADD COLUMN IF NOT EXISTS admin_comment_at TIMESTAMPTZ;
+
+ALTER TABLE issues
+  ADD COLUMN IF NOT EXISTS admin_comment TEXT,
+  ADD COLUMN IF NOT EXISTS admin_comment_by UUID,
+  ADD COLUMN IF NOT EXISTS admin_comment_at TIMESTAMPTZ;

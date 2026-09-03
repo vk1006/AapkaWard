@@ -1,8 +1,26 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --header-height: 3.5rem;
+  --page-bg: #fff7ed;
+  --surface-bg: #ffffff;
+  --surface-muted: #fff7ed;
+  --border-color: #fed7aa;
+  --text-muted: #6b7280;
+}
+
+.dark {
+  --background: #0c0a09;
+  --foreground: #fafaf9;
+  --page-bg: #0c0a09;
+  --surface-bg: #1c1917;
+  --surface-muted: #292524;
+  --border-color: #44403c;
+  --text-muted: #a8a29e;
 }
 
 @theme inline {
@@ -12,15 +30,120 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
 body {
-  background: var(--background);
+  background: var(--page-bg);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+[id] {
+  scroll-margin-top: calc(var(--header-height) + 1rem);
+}
+
+.page-title {
+  @apply text-2xl font-bold text-orange-800 sm:text-3xl dark:text-orange-300;
+}
+
+.page-subtitle {
+  @apply text-sm text-gray-600 dark:text-stone-400;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter {
+  animation: page-enter 0.22s ease-out;
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-drawer-in {
+  animation: drawer-in 0.22s ease-out;
+}
+
+.animate-backdrop-in {
+  animation: backdrop-in 0.2s ease-out;
+}
+
+.fab-add {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  min-width: 3.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: #ea580c;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.4);
+  transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fab-add:hover {
+  background: #c2410c;
+  transform: scale(1.05);
+  box-shadow: 0 10px 24px rgba(234, 88, 12, 0.5);
+}
+
+.fab-add:active {
+  transform: scale(0.96);
+}
+
+.fab-add:focus-visible {
+  outline: 2px solid #ea580c;
+  outline-offset: 3px;
 }

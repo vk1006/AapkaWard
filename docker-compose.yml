@@ -1,0 +1,39 @@
+services:
+  # Local full stack: mock OTP + local file storage (not production config).
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ward
+      POSTGRES_PASSWORD: ward
+      POSTGRES_DB: ward_campaign
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ward -d ward_campaign"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://ward:ward@postgres:5432/ward_campaign
+      OTP_ADAPTER: mock
+      FILE_STORE_ADAPTER: local
+      MODERATION_ADAPTER: blocklist
+      UPLOAD_DIR: /app/uploads
+      ADMIN_PHONES: "+919999999999"
+      NODE_ENV: production
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  uploads_data:

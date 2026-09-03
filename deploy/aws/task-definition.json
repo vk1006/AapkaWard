@@ -1,0 +1,68 @@
+{
+  "family": "ward-campaign",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::051133077681:role/ward-campaign-ecs-execution",
+  "taskRoleArn": "arn:aws:iam::051133077681:role/ward-campaign-ecs-task",
+  "containerDefinitions": [
+    {
+      "name": "app",
+      "image": "051133077681.dkr.ecr.ap-south-1.amazonaws.com/ward-campaign:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "NODE_ENV", "value": "production" },
+        { "name": "OTP_ADAPTER", "value": "firebase" },
+        { "name": "FILE_STORE_ADAPTER", "value": "s3" },
+        { "name": "AWS_REGION", "value": "ap-south-1" },
+        { "name": "AWS_S3_BUCKET", "value": "ward-campaign-prod" },
+        { "name": "MODERATION_ADAPTER", "value": "blocklist" },
+        { "name": "NEXT_PUBLIC_OTP_ADAPTER", "value": "firebase" }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:ap-south-1:051133077681:secret:ward-campaign/prod:DATABASE_URL::"
+        },
+        {
+          "name": "ADMIN_PHONES",
+          "valueFrom": "arn:aws:secretsmanager:ap-south-1:051133077681:secret:ward-campaign/prod:ADMIN_PHONES::"
+        },
+        {
+          "name": "FIREBASE_PROJECT_ID",
+          "valueFrom": "arn:aws:secretsmanager:ap-south-1:051133077681:secret:ward-campaign/prod:FIREBASE_PROJECT_ID::"
+        },
+        {
+          "name": "FIREBASE_CLIENT_EMAIL",
+          "valueFrom": "arn:aws:secretsmanager:ap-south-1:051133077681:secret:ward-campaign/prod:FIREBASE_CLIENT_EMAIL::"
+        },
+        {
+          "name": "FIREBASE_PRIVATE_KEY",
+          "valueFrom": "arn:aws:secretsmanager:ap-south-1:051133077681:secret:ward-campaign/prod:FIREBASE_PRIVATE_KEY::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ward-campaign",
+          "awslogs-region": "ap-south-1",
+          "awslogs-stream-prefix": "app"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}
