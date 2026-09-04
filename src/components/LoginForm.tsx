@@ -97,6 +97,32 @@ function getFirebaseOtpSendError(error: unknown, locale: string): string {
   return locale === "hi" ? "OTP भेजने में विफल।" : "Failed to send OTP.";
 }
 
+function getDigits(raw: string): string {
+  return raw.replace(/\D/g, "");
+}
+
+function normalizeToE164(raw: string): string {
+  const digits = getDigits(raw);
+  if (digits.length === 10) {
+    return `+91${digits}`;
+  }
+  if (digits.length === 12 && digits.startsWith("91")) {
+    return `+${digits}`;
+  }
+  if (raw.trim().startsWith("+")) {
+    return `+${digits}`;
+  }
+  return `+${digits}`;
+}
+
+function isIndianPhoneValid(raw: string): boolean {
+  const digits = getDigits(raw);
+  if (digits.startsWith("91")) {
+    return digits.length === 12;
+  }
+  return digits.length === 10;
+}
+
 export function LoginForm() {
   const t = useTranslations("login");
   const locale = useLocale();
@@ -215,6 +241,16 @@ export function LoginForm() {
       return;
     }
 
+    if (!isIndianPhoneValid(phone)) {
+      setError(
+        locale === "hi"
+          ? "कृपया 10 अंकों का मान्य मोबाइल नंबर दर्ज करें।"
+          : "Please enter a valid 10-digit mobile number."
+      );
+      return;
+    }
+
+    const formattedPhone = normalizeToE164(phone);
     setLoading(true);
     setError("");
 
@@ -226,7 +262,7 @@ export function LoginForm() {
 
       confirmationRef.current = await signInWithPhoneNumber(
         auth,
-        phone.trim(),
+        formattedPhone,
         recaptchaVerifierRef.current
       );
       setStep("otp");
@@ -254,8 +290,7 @@ export function LoginForm() {
     }
   }
 
-  async function handleVerify(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleVerify() {
     setLoading(true);
     setError("");
 
@@ -263,7 +298,7 @@ export function LoginForm() {
       let body: { phone?: string; code?: string; idToken?: string };
 
       if (isMock) {
-        body = { phone, code };
+        body = { phone: normalizeToE164(phone), code };
       } else {
         if (!confirmationRef.current) {
           setError(locale === "hi" ? "पहले OTP भेजें।" : "Send OTP first.");
@@ -332,12 +367,26 @@ export function LoginForm() {
     }
   }
 
-  const phoneDigits = phone.replace(/\D/g, "");
-  const isPhoneValid = phoneDigits.length >= 10;
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (loading) return;
+
+    if (step === "phone") {
+      if (isMock) {
+        setStep("otp");
+      } else {
+        await handleSendOtp();
+      }
+    } else {
+      await handleVerify();
+    }
+  }
+
+  const isPhoneValid = isIndianPhoneValid(phone);
   const canSendOtp = isMock ? isPhoneValid : (isPhoneValid && captchaSolved);
 
   return (
-    <form onSubmit={handleVerify} className={`mx-auto w-full max-w-md space-y-4 ${cardClass}`}>
+    <form onSubmit={handleSubmit} className={`mx-auto w-full max-w-md space-y-4 ${cardClass}`}>
       <h1 className="text-2xl font-bold text-[#3a00ff] dark:text-white">{t("title")}</h1>
 
       {hostWarning && (
@@ -382,8 +431,7 @@ export function LoginForm() {
 
       {step === "phone" ? (
         <button
-          type="button"
-          onClick={isMock ? () => setStep("otp") : handleSendOtp}
+          type="submit"
           disabled={loading || !canSendOtp}
           className={btnPrimaryClass}
           aria-busy={loading}
