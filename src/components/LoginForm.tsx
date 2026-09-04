@@ -20,41 +20,40 @@ const RECAPTCHA_CONTAINER_ID = "firebase-recaptcha";
 function getFirebaseOtpSendError(error: unknown, locale: string): string {
   const code = (error as { code?: string })?.code;
   const message = (error as { message?: string })?.message ?? "";
-  devLogError("Firebase OTP send failed:", error);
+  console.error("[Firebase OTP Error]", { code, message, error });
 
   const pick = (en: string, hi: string) => (locale === "hi" ? hi : en);
 
   if (code === "auth/operation-not-allowed" && /region/i.test(message)) {
-    return isDevelopment()
-      ? pick(
-          "Enable India (+91) in Firebase → Authentication → Settings → SMS region policy.",
-          "Firebase Console में India (+91) SMS region सक्षम करें।"
-        )
-      : pick("Phone sign-in is not available.", "फ़ोन साइन-इन उपलब्ध नहीं है।");
+    return pick(
+      "India (+91) SMS region is not enabled in Firebase Console → Authentication → Settings → SMS region policy.",
+      "Firebase Console → Authentication → Settings → SMS region policy में India (+91) SMS क्षेत्र सक्षम करें।"
+    );
   }
 
-  const userMessages: Record<string, { en: string; hi: string }> = {
+  const messages: Record<string, { en: string; hi: string }> = {
+    "auth/unauthorized-domain": {
+      en: "Domain not authorized. Please add aapkaward.in to Firebase Console → Authentication → Settings → Authorized domains.",
+      hi: "डोमेन अधिकृत नहीं है। Firebase Console → Authentication → Settings → Authorized domains में aapkaward.in जोड़ें।",
+    },
     "auth/captcha-check-failed": {
       en: "reCAPTCHA verification failed. Complete the checkbox above and try again.",
       hi: "reCAPTCHA सत्यापन विफल। ऊपर वाला चेकबॉक्स पूरा करें और पुनः प्रयास करें।",
     },
     "auth/invalid-phone-number": {
-      en: "Invalid phone number format.",
-      hi: "अमान्य फ़ोन नंबर।",
+      en: "Invalid phone number format. Please enter a valid 10-digit Indian mobile number.",
+      hi: "अमान्य फ़ोन नंबर। कृपया 10 अंकों का मान्य भारतीय मोबाइल नंबर दर्ज करें।",
     },
     "auth/too-many-requests": {
-      en: "Too many attempts. Try again later.",
-      hi: "बहुत अधिक प्रयास। बाद में पुनः प्रयास करें।",
+      en: "Too many attempts from this device or number. Please wait a few minutes before trying again.",
+      hi: "बहुत अधिक प्रयास। कृपया कुछ मिनट प्रतीक्षा करें और पुनः प्रयास करें।",
     },
     "auth/quota-exceeded": {
-      en: "SMS quota exceeded.",
-      hi: "SMS कोटा समाप्त।",
+      en: "Daily SMS quota exceeded in Firebase. Please wait or check your Firebase usage plan.",
+      hi: "Firebase में दैनिक SMS कोटा समाप्त हो गया है। कृपया प्रतीक्षा करें या अपना Firebase प्लान देखें।",
     },
-  };
-
-  const devMessages: Record<string, { en: string; hi: string }> = {
     "auth/operation-not-allowed": {
-      en: "Phone sign-in is not enabled in Firebase Console.",
+      en: "Phone sign-in is not enabled in Firebase Console → Authentication → Sign-in method.",
       hi: "Firebase Console में Phone sign-in सक्षम नहीं है।",
     },
     "auth/billing-not-enabled": {
@@ -62,30 +61,13 @@ function getFirebaseOtpSendError(error: unknown, locale: string): string {
       hi: "Phone OTP के लिए Firebase Blaze plan जरूरी है।",
     },
     "auth/invalid-app-credential": {
-      en: "reCAPTCHA/domain issue. Use http://127.0.0.1:3000 (not localhost), add 127.0.0.1 to Firebase authorized domains, and configure reCAPTCHA under Authentication → Settings.",
-      hi: "reCAPTCHA/domain समस्या। http://127.0.0.1:3000 उपयोग करें, Firebase authorized domains में 127.0.0.1 जोड़ें, और Authentication → Settings में reCAPTCHA कॉन्फ़िगर करें।",
+      en: "reCAPTCHA verification issue. Ensure aapkaward.in is added to Firebase Authorized Domains and reCAPTCHA settings.",
+      hi: "reCAPTCHA/डोमेन समस्या। सुनिश्चित करें कि aapkaward.in Firebase Authorized Domains में जुड़ा हुआ है।",
     },
   };
 
-  const prodMessages: Record<string, { en: string; hi: string }> = {
-    "auth/operation-not-allowed": {
-      en: "Phone sign-in is not available.",
-      hi: "फ़ोन साइन-इन उपलब्ध नहीं है।",
-    },
-    "auth/billing-not-enabled": {
-      en: "Phone sign-in is temporarily unavailable.",
-      hi: "फ़ोन साइन-इन अस्थायी रूप से उपलब्ध नहीं है।",
-    },
-    "auth/invalid-app-credential": {
-      en: "reCAPTCHA verification failed. Refresh the page and try again.",
-      hi: "reCAPTCHA सत्यापन विफल। पेज रिफ्रेश करें और पुनः प्रयास करें।",
-    },
-  };
-
-  const table = isDevelopment() ? { ...userMessages, ...devMessages } : { ...userMessages, ...prodMessages };
-
-  if (code && table[code]) {
-    return pick(table[code].en, table[code].hi);
+  if (code && messages[code]) {
+    return pick(messages[code].en, messages[code].hi);
   }
 
   if (/already been rendered|recaptcha timeout/i.test(message)) {
@@ -94,7 +76,8 @@ function getFirebaseOtpSendError(error: unknown, locale: string): string {
       : "reCAPTCHA timed out. Refresh the page and try again.";
   }
 
-  return locale === "hi" ? "OTP भेजने में विफल।" : "Failed to send OTP.";
+  const detail = code ? ` (${code})` : message ? ` (${message})` : "";
+  return locale === "hi" ? `OTP भेजने में विफल${detail}।` : `Failed to send OTP${detail}.`;
 }
 
 function getDigits(raw: string): string {
