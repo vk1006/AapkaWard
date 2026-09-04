@@ -94,15 +94,17 @@ export class IssuesService {
       });
     }
 
-    const { result } = await this.moderation.evaluateAndCreateCase({
+    await this.moderation.evaluateAndCreateCase({
       subjectType: "issue",
       subjectId: row!.id,
       text: input.body,
       locale: input.locale,
     });
 
-    let status: "pending" | "approved" | "rejected" = "approved";
-    if (result.verdict === "block") status = "rejected";
+    // Issues are private until an admin explicitly approves them. Automated
+    // moderation creates a case for the admin, but never rejects or publishes
+    // the resident's submission by itself.
+    const status = "pending";
 
     const [updated] = await this.db
       .update(issues)

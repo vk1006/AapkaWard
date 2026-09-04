@@ -156,21 +156,6 @@ body {
 @media (min-width: 640px) { .candidate-portrait-placeholder { min-height: 27rem; } }
 
 
-/* Legacy content components inherit the Ward 20 palette until they are rebuilt. */
-.text-orange-600, .text-orange-700, .text-orange-800 { color: #3a00ff; }
-.bg-orange-50, .bg-orange-100 { background-color: #eef7fc; }
-.border-orange-100, .border-orange-200 { border-color: #c7deec; }
-.ring-orange-100 { --tw-ring-color: #d9e9f2; }
-.bg-orange-600 { background-color: #3a00ff; }
-.hover\:bg-orange-50:hover { background-color: #e7e1ff; }
-.hover\:bg-orange-700:hover { background-color: #2600b3; }
-.dark .dark\:bg-stone-900, .dark .dark\:bg-stone-800 { background-color: #171717; }
-.dark .dark\:bg-stone-700 { background-color: #262626; }
-.dark .dark\:border-stone-700, .dark .dark\:border-stone-600 { border-color: #404040; }
-.dark .dark\:ring-stone-700 { --tw-ring-color: #404040; }
-.dark .dark\:text-orange-300, .dark .dark\:text-orange-400, .dark .dark\:text-stone-100 { color: #ffffff; }
-.dark .dark\:text-stone-200, .dark .dark\:text-stone-300, .dark .dark\:text-stone-400, .dark .dark\:text-stone-500 { color: #d4d4d4; }
-
 /* Hide Google's floating badge at bottom-right (legal text is displayed in LoginForm) */
 .grecaptcha-badge {
   visibility: hidden !important;

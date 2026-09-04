@@ -30,11 +30,16 @@ export async function GET(
     }
   }
 
-  const ttlSec = 3600;
-  const url = await fileStore.getSignedUrl(key, ttlSec);
-  return NextResponse.redirect(url, {
-    headers: {
-      "Cache-Control": `private, max-age=${ttlSec - 300}`,
-    },
-  });
+  try {
+    const ttlSec = 3600;
+    const url = await fileStore.getSignedUrl(key, ttlSec);
+    return NextResponse.redirect(url, {
+      headers: {
+        "Cache-Control": `private, max-age=${ttlSec - 300}`,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to get file URL:", error);
+    return new NextResponse("File not found or storage unavailable", { status: 404 });
+  }
 }

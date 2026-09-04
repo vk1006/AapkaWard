@@ -159,32 +159,30 @@ export class EventsService {
       throw new AppError("NOT_FOUND", "कार्यक्रम नहीं मिला।", "Event not found.", 404);
     }
 
-    const [existing] = await this.db
-      .select()
-      .from(eventRsvps)
-      .where(and(eq(eventRsvps.eventId, eventId), eq(eventRsvps.userId, userId)))
-      .limit(1);
-
-    if (existing) {
-      const [updated] = await this.db
-        .update(eventRsvps)
-        .set({
-          status,
-          version: existing.version + 1,
-          updatedAt: this.clock.now(),
-        })
-        .where(eq(eventRsvps.id, existing.id))
-        .returning();
-      EventsService.clearCache();
-      return updated!;
-    }
-
-    const [created] = await this.db
+    // One SQL upsert prevents duplicate rows or a failed request when a user
+    // submits twice from separate tabs at the same time.
+    const [rsvp] = await this.db
       .insert(eventRsvps)
       .values({ eventId, userId, status })
+      .onConflictDoUpdate({
+        target: [eventRsvps.eventId, eventRsvps.userId],
+        set: {
+          status,
+          version: sql`${eventRsvps.version} + 1`,
+          updatedAt: this.clock.now(),
+        },
+      })
       .returning();
     EventsService.clearCache();
-    return created!;
+    return rsvp!;
+  }
+
+  async getGoingCount(eventId: string): Promise<number> {
+    const [count] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(eventRsvps)
+      .where(and(eq(eventRsvps.eventId, eventId), eq(eventRsvps.status, "going")));
+    return count?.count ?? 0;
   }
 
   async getUserRsvp(eventId: string, userId: string) {

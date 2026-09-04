@@ -13,7 +13,9 @@ const DEFAULT_FLAGS: Record<string, { enabled: boolean; payload?: Record<string,
   issues: { enabled: false },
   petitions: { enabled: false },
   content_freeze: { enabled: false },
-  public_suggestion_wall: { enabled: true },
+  public_suggestion_wall: { enabled: false },
+  events: { enabled: false },
+  suggestions: { enabled: false },
 };
 
 export class PlatformService {

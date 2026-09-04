@@ -12,7 +12,7 @@ export default async function AdminDashboard({
   return (
     <div className={cardClass}>
       <p className={bodyTextClass}>
-        Use the navigation above to moderate suggestions, manage manifesto items,
+        Use the navigation above to moderate suggestions, manage priority items,
         events, and feature flags.
       </p>
     </div>

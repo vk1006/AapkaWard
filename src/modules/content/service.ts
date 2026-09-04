@@ -118,14 +118,14 @@ export class ContentService {
         titleEn: "About Aapka Ward",
         bodyHi: `आपका वार्ड आपके इलाके की आधिकारिक जन-सहभागिता प्लेटफ़ॉर्म है।
 
-यहाँ आप वार्ड की समस्याएँ दर्ज कर सकते हैं, विकास के सुझाव दे सकते हैं, कार्यक्रमों में भाग ले सकते हैं और घोषणा पत्र पढ़ सकते हैं — सब कुछ एक ही जगह, सरल और पारदर्शी तरीके से।
+यहाँ आप वार्ड की समस्याएँ दर्ज कर सकते हैं, विकास के सुझाव दे सकते हैं, कार्यक्रमों में भाग ले सकते हैं और प्राथमिकताएँ जान सकते हैं — सब कुछ एक ही जगह, सरल और पारदर्शी तरीके से।
 
 हमारा उद्देश्य है कि हर निवासी की आवाज़ सुनी जाए, जवाबदेही बनी रहे और वार्ड के विकास में आपकी सीधी भागीदारी हो।
 
 यह प्लेटफ़ॉर्म खुला है — कोई भी पंजीकृत निवासी सुझाव दे सकता है। अशिष्ट या व्यक्तिगत हमला वाली सामग्री प्रकाशित नहीं की जाती।`,
         bodyEn: `Aapka Ward is your neighbourhood's official participation platform.
 
-Here you can report ward issues, share development suggestions, join events, and read the manifesto — all in one place, simply and transparently.
+Here you can report ward issues, share development suggestions, join events, and explore our priorities — all in one place, simply and transparently.
 
 Our goal is to ensure every resident is heard, accountability stays strong, and you have a direct role in your ward's progress.
 

@@ -17,7 +17,9 @@ export async function PUT(
     const body = schema.parse(await request.json());
     const { events } = getContainer();
     const rsvp = await events.upsertRsvp(id, user.id, body.status);
-    return jsonOk(rsvp);
+    // Return the database count rather than asking the browser to calculate it.
+    // This remains correct when other residents RSVP at the same time.
+    return jsonOk({ rsvp, goingCount: await events.getGoingCount(id) });
   } catch (error) {
     return jsonError(error);
   }

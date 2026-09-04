@@ -5,10 +5,13 @@ import { listCardClass, emptyStateClass } from "@/components/ui";
 
 export default async function SuggestionsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ submitted?: string }>;
 }) {
   const { locale } = await params;
+  const { submitted } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("suggestions");
 
@@ -22,6 +25,12 @@ export default async function SuggestionsPage({
         <p className="page-subtitle mt-2">{t("policy")}</p>
       </div>
 
+      {submitted === "pending" && (
+        <p role="status" className="rounded-xl border border-[#3a00ff]/25 bg-[#e7e1ff]/60 px-4 py-3 text-sm font-medium text-[#2600b3] dark:border-neutral-600 dark:bg-neutral-900 dark:text-white">
+          {t("pending")}
+        </p>
+      )}
+
       {items.length === 0 ? (
         <p className={emptyStateClass}>{t("empty")}</p>
       ) : (
@@ -29,7 +38,7 @@ export default async function SuggestionsPage({
           {items.map((s) => (
             <li key={s.id} className={listCardClass}>
               <span className="text-xs font-medium uppercase tracking-wide text-[#3a00ff] dark:text-white">
-                {s.category}
+                {t(`categories.${s.category}`)}
               </span>
               <p className="mt-1 break-words text-gray-800 dark:text-neutral-200">{s.body}</p>
               {s.landmark && <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400">{s.landmark}</p>}

@@ -37,6 +37,9 @@
 | `AWS_PROFILE` | optional | — | Local CLI profile |
 | `AWS_SESSION_TOKEN` | optional | — | Temporary creds |
 | `MODERATION_ADAPTER` | `blocklist` | `blocklist` | |
+| `RESEND_API_KEY` | optional | ✓ for footer feedback | Resend server API key; never expose as `NEXT_PUBLIC_*` |
+| `EMAIL_FROM` | optional | ✓ for footer feedback | Verified sender, e.g. `Aapka Ward 20 <noreply@aapkaward.in>` |
+| `WEBSITE_FEEDBACK_TO` | optional | ✓ for footer feedback | Private inbox which receives website feedback |
 | `NODE_ENV` | `development` | `production` | |
 | `BENCH_PROD_URL` | optional | — | `npm run bench:prod` |
 

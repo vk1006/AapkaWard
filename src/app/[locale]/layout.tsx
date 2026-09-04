@@ -26,16 +26,28 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   const { platform } = getContainer();
-  const issuesEnabled = await platform.isEnabled("issues");
+  const [issuesEnabled, eventsEnabled, suggestionsEnabled] = await Promise.all([
+    platform.isEnabled("issues"),
+    platform.isEnabled("events"),
+    platform.isEnabled("suggestions"),
+  ]);
 
   return (
     <NextIntlClientProvider messages={messages}>
       <ThemeProvider>
         <AuthProvider>
           <PageShell>
-            <Header issuesEnabled={issuesEnabled} />
+            <Header
+              issuesEnabled={issuesEnabled}
+              eventsEnabled={eventsEnabled}
+              suggestionsEnabled={suggestionsEnabled}
+            />
             <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-8 sm:py-8">{children}</main>
-            <FloatingAddButton issuesEnabled={issuesEnabled} />
+            <FloatingAddButton
+              issuesEnabled={issuesEnabled}
+              eventsEnabled={eventsEnabled}
+              suggestionsEnabled={suggestionsEnabled}
+            />
           </PageShell>
         </AuthProvider>
       </ThemeProvider>

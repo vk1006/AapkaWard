@@ -60,22 +60,23 @@ export class SuggestionsService {
       })
       .returning();
 
-    const { result } = await this.moderation.evaluateAndCreateCase({
+    await this.moderation.evaluateAndCreateCase({
       subjectType: "suggestion",
       subjectId: row!.id,
       text: input.body,
       locale: input.locale,
     });
 
-    let status: "pending" | "approved" | "rejected" = "pending";
-    if (result.verdict === "block") status = "rejected";
-    else if (result.verdict === "allow") status = "approved";
+    // Every resident submission needs an explicit admin decision before it is
+    // public. Automated moderation creates a case for the admin, but never
+    // publishes or rejects the resident's submission by itself.
+    const status = "pending";
 
     const [updated] = await this.db
       .update(suggestions)
       .set({
         moderationStatus: status,
-        publishedAt: status === "approved" ? this.clock.now() : null,
+        publishedAt: null,
       })
       .where(eq(suggestions.id, row!.id))
       .returning();

@@ -9,6 +9,7 @@ import { FirebaseOtpAdapter } from "@/infrastructure/adapters/otp/firebase";
 import { MockOtpAdapter } from "@/infrastructure/adapters/otp/mock";
 import { LocalFileAdapter } from "@/infrastructure/adapters/storage/local";
 import { S3FileAdapter } from "@/infrastructure/adapters/storage/s3";
+import { R2FileAdapter } from "@/infrastructure/adapters/storage/r2";
 import { BlocklistModerationAdapter } from "@/infrastructure/adapters/moderation/blocklist";
 import { SystemClockAdapter } from "@/infrastructure/adapters/clock/system";
 import { OutboxEventBusAdapter } from "@/infrastructure/adapters/event-bus/outbox";
@@ -54,7 +55,8 @@ function createFileStoreAdapter(): FileStorePort {
   if (adapter === "local") {
     return new LocalFileAdapter(process.env.UPLOAD_DIR ?? "./uploads");
   }
-  if (adapter === "s3" || adapter === "r2") return new S3FileAdapter();
+  if (adapter === "r2") return new R2FileAdapter();
+  if (adapter === "s3") return new S3FileAdapter();
   throw new Error(`Unknown FILE_STORE_ADAPTER: ${adapter}`);
 }
 

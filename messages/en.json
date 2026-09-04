@@ -23,13 +23,20 @@
     "ctaEvents": "View events",
     "promiseTitle": "Our priorities",
     "priorityEyebrow": "Beyond promises",
-    "viewAll": "View full manifesto →",
-    "candidatePhotoLabel": "Candidate photo placeholder",
-    "candidatePhotoHint": "Candidate photo coming soon"
+    "viewAll": "View all priorities →",
+    "candidatePhotoLabel": "Ward 20 candidate greeting residents",
+    "candidatePhotoHint": "Candidate photo coming soon",
+    "candidateNameLabel": "Candidate",
+    "candidateName": "Rukhma Devi",
+    "ballotNumberLabel": "Ballot number",
+    "ballotNumber": "3",
+    "electionSymbolLabel": "Election symbol",
+    "electionSymbol": "Almirah (Cupboard)"
   },
   "manifesto": {
-    "title": "Manifesto",
-    "share": "Share on WhatsApp"
+    "title": "Our Priorities",
+    "share": "Share on WhatsApp",
+    "empty": "No priority items have been published yet."
   },
   "suggestions": {
     "title": "Share your suggestion",
@@ -37,6 +44,7 @@
     "body": "Suggestion",
     "landmark": "Area / landmark (optional)",
     "submit": "Submit",
+    "error": "Could not submit your suggestion. Please try again.",
     "pending": "Your suggestion is under review.",
     "rejected": "Your suggestion was not accepted.",
     "approved": "Thank you! Your suggestion has been published.",
@@ -47,7 +55,8 @@
     "adminResponse": "Team updates",
     "teamLabel": "Team",
     "viewComments": "View team updates",
-    "hideComments": "Hide team updates"
+    "hideComments": "Hide team updates",
+    "categories": { "water": "Water", "roads": "Roads", "sanitation": "Sanitation", "education": "Education", "health": "Health", "electricity": "Electricity", "other": "Other" }
   },
   "issues": {
     "title": "Ward issues",
@@ -56,6 +65,9 @@
     "body": "Description",
     "landmark": "Area / landmark (optional)",
     "submit": "Submit",
+    "error": "Could not submit your issue. Please try again.",
+    "pending": "Thank you. Your issue has been sent for review and will be published after approval.",
+    "rejected": "Your issue could not be accepted.",
     "policy": "Abusive content will not be published.",
     "empty": "No issues have been published yet.",
     "media": "Photos & videos (optional)",
@@ -72,7 +84,8 @@
     "adminResponse": "Team updates",
     "teamLabel": "Team",
     "viewComments": "View team updates",
-    "hideComments": "Hide team updates"
+    "hideComments": "Hide team updates",
+    "categories": { "water": "Water", "roads": "Roads", "sanitation": "Sanitation", "electricity": "Electricity", "other": "Other" }
   },
   "events": {
     "title": "Events",
@@ -81,7 +94,11 @@
     "notGoing": "Not going",
     "goingCount": "{count} people going",
     "share": "Share",
-    "create": "Add event"
+    "create": "Add event",
+    "empty": "No upcoming events.",
+    "loginRequired": "Please log in first.",
+    "rsvpFailed": "We could not update your RSVP. Please try again.",
+    "cancelGoing": "Going selected. Select again to cancel."
   },
   "login": {
     "title": "Login with phone",
@@ -96,12 +113,24 @@
   },
   "about": {
     "title": "About us",
-    "viewManifesto": "→ View manifesto"
+    "viewManifesto": "→ View priorities"
+  },
+  "feedback": {
+    "title": "Help improve this website",
+    "description": "Have a suggestion about this website? Send it directly to our team.",
+    "name": "Name (optional)",
+    "email": "Email (optional)",
+    "message": "Your suggestion",
+    "submit": "Send feedback",
+    "sending": "Sending...",
+    "success": "Thank you. Your feedback has been sent.",
+    "error": "We could not send your feedback. Please try again.",
+    "botField": "Leave this field empty"
   },
   "admin": {
     "title": "Admin",
     "moderation": "Moderation",
-    "manifesto": "Manifesto",
+    "manifesto": "Priorities",
     "pages": "Pages",
     "events": "Events",
     "flags": "Features",
@@ -133,13 +162,19 @@
     "saveComment": "Save response",
     "commentError": "Could not save response. Please try again.",
     "viewComments": "View updates",
-    "hideComments": "Hide updates"
+    "hideComments": "Hide updates",
+    "dashboard": "Dashboard"
   },
   "common": {
     "loading": "Loading...",
     "error": "Something went wrong",
     "language": "Language",
     "themeDark": "Switch to dark mode",
-    "themeLight": "Switch to light mode"
+    "themeLight": "Switch to light mode",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "mobileNavigation": "Mobile navigation",
+    "mainNavigation": "Main navigation",
+    "loadingPage": "Loading page"
   }
 }

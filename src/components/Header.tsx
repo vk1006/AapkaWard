@@ -10,16 +10,28 @@ import { LogoutButton } from "./LogoutButton";
 import { useAuth } from "@/components/AuthProvider";
 import { navLinkActiveClass, navLinkClass } from "@/components/ui";
 import { SiteLogo } from "@/components/SiteLogo";
+import { FooterFeedbackForm } from "@/components/FooterFeedbackForm";
 
-type NavItem = { href: "/manifesto" | "/suggestions" | "/issues" | "/events" | "/about"; label: string };
+type NavItem = { href: string; label: string };
 
 function isNavActive(pathname: string, href: string) {
+  if (href.startsWith("/#") || href.startsWith("#")) return false;
+  if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
+export function Header({
+  issuesEnabled = false,
+  eventsEnabled = false,
+  suggestionsEnabled = false,
+}: {
+  issuesEnabled?: boolean;
+  eventsEnabled?: boolean;
+  suggestionsEnabled?: boolean;
+}) {
   const t = useTranslations("nav");
   const site = useTranslations("site");
+  const common = useTranslations("common");
   const pathname = usePathname();
   const { user, loading } = useAuth();
   const [open, setOpen] = useState(false);
@@ -30,12 +42,16 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
   }, []);
 
   const navItems: NavItem[] = [
-    { href: "/manifesto", label: t("manifesto") },
-    { href: "/suggestions", label: t("suggestions") },
+    { href: "/", label: t("home") },
+    ...(suggestionsEnabled
+      ? [{ href: "/suggestions" as const, label: t("suggestions") }]
+      : []),
     ...(issuesEnabled
       ? [{ href: "/issues" as const, label: t.has("issues") ? t("issues") : "Issues" }]
       : []),
-    { href: "/events", label: t("events") },
+    ...(eventsEnabled
+      ? [{ href: "/events" as const, label: t("events") }]
+      : []),
     { href: "/about", label: t("about") },
   ];
 
@@ -94,7 +110,7 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#c7deec] bg-[#eef7fc]/90 backdrop-blur-md dark:border-neutral-700 dark:bg-black/90">
+    <header className="sticky top-0 z-40 border-b border-[#c7deec] bg-white/95 backdrop-blur-md dark:border-neutral-700 dark:bg-black/90">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
         <Link
           href="/"
@@ -109,7 +125,7 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label={common("mainNavigation")}>
           {navItems.map((item) => (
             <Link key={item.href} href={item.href} className={linkClass(item.href)}>
               {item.label}
@@ -133,7 +149,7 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
           <LanguageToggle />
           <button
             type="button"
-            aria-label="Menu"
+            aria-label={common("menu")}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
             className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#c7deec] bg-white text-[#3b14f5] transition-colors hover:bg-[#e7e1ff] focus:outline-none focus:ring-2 focus:ring-[#3b14f5]/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
@@ -155,19 +171,26 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
           <>
             <button
               type="button"
-              aria-label="Close menu"
+              aria-label={common("closeMenu")}
               className="animate-backdrop-in fixed inset-0 z-[100] bg-black/30 backdrop-blur-[2px] lg:hidden"
               onClick={() => setOpen(false)}
             />
             <nav
               className="animate-drawer-in fixed right-0 top-0 z-[110] flex h-[100dvh] w-[min(100%,18rem)] flex-col border-l border-[#c7deec] bg-[#f8fcff] shadow-xl dark:border-neutral-700 dark:bg-neutral-900 lg:hidden"
-              aria-label="Mobile"
+              aria-label={common("mobileNavigation")}
             >
               <div className="flex items-center justify-between border-b border-[#d9e9f2] px-4 py-3 dark:border-neutral-700">
-                <span className="font-semibold text-[#25115d] dark:text-white">{t("home")}</span>
+                <Link
+                  href="/"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg py-1 text-[#25115d] transition-colors hover:text-[#3b14f5] dark:text-white"
+                >
+                  <SiteLogo className="h-6 w-6 text-[#3a00ff]" />
+                  <span className="text-base font-extrabold tracking-tight">{site("brand")}</span>
+                </Link>
                 <button
                   type="button"
-                  aria-label="Close menu"
+                  aria-label={common("closeMenu")}
                   onClick={() => setOpen(false)}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-600 hover:bg-[#e7e1ff] dark:text-neutral-300 dark:hover:bg-neutral-800"
                 >
@@ -215,12 +238,15 @@ export function PageShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen w-full flex-col bg-[#eef7fc] text-slate-900 dark:bg-black dark:text-white">
       {children}
       <footer className="mt-auto border-t border-[#c7deec] bg-white px-4 py-7 dark:border-neutral-700 dark:bg-neutral-900">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 text-center sm:flex-row sm:justify-between sm:text-left">
-          <div className="flex items-center gap-2 text-[#25115d] dark:text-white">
-            <SiteLogo className="h-8 w-8 text-[#3a00ff]" />
-            <span className="font-bold">{site("brand")}</span>
+        <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] sm:items-start">
+          <div className="text-center sm:text-left">
+            <div className="flex items-center justify-center gap-2 text-[#25115d] dark:text-white sm:justify-start">
+              <SiteLogo className="h-8 w-8 text-[#3a00ff]" />
+              <span className="font-bold">{site("brand")}</span>
+            </div>
+            <p className="mt-2 max-w-md text-sm text-slate-500 dark:text-neutral-300">{site("footer")}</p>
           </div>
-          <p className="max-w-md text-sm text-slate-500 dark:text-neutral-300">{site("footer")}</p>
+          <FooterFeedbackForm />
         </div>
       </footer>
     </div>

@@ -49,10 +49,6 @@ export default async function AboutPage({
           </p>
         </section>
       )}
-
-      <Link href="/manifesto" className={linkAccentClass}>
-        {t("viewManifesto")}
-      </Link>
     </div>
   );
 }

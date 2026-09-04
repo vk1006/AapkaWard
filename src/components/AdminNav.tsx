@@ -30,7 +30,7 @@ export function AdminNav() {
                 : "border-transparent text-gray-600 hover:border-[#c7deec] hover:text-[#3a00ff] dark:text-neutral-400 dark:hover:border-neutral-700 dark:hover:text-white"
             }`}
           >
-            {link.labelKey === "dashboard" ? "Dashboard" : t(link.labelKey)}
+            {t(link.labelKey)}
           </Link>
         );
       })}

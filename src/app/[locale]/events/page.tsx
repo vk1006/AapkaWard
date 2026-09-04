@@ -2,7 +2,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getContainer } from "@/infrastructure/container";
 import { getCurrentUser } from "@/shared/auth";
 import { EventCard } from "@/components/EventCard";
-import { getRequestOrigin } from "@/shared/request-origin";
 
 export default async function EventsPage({
   params,
@@ -13,7 +12,6 @@ export default async function EventsPage({
   setRequestLocale(locale);
   const t = await getTranslations("events");
   const user = await getCurrentUser();
-  const origin = await getRequestOrigin();
 
   const { events } = getContainer();
   const items = await events.listPublicWithCounts();
@@ -32,7 +30,7 @@ export default async function EventsPage({
     <div className="space-y-6 pb-24">
       <h1 className="page-title">{t("title")}</h1>
       {enriched.length === 0 ? (
-        <p className="text-gray-600 dark:text-neutral-400">No upcoming events.</p>
+        <p className="text-gray-600 dark:text-neutral-400">{t("empty")}</p>
       ) : (
         <div className="space-y-6">
           {enriched.map((event) => (
@@ -45,7 +43,6 @@ export default async function EventsPage({
               locale={locale}
               userRsvp={event.userRsvp}
               isLoggedIn={!!user}
-              shareUrl={`${origin}/${locale}/events#${event.id}`}
             />
           ))}
         </div>

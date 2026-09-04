@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "@/i18n/navigation";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   ACCEPTED_MEDIA_ACCEPT,
@@ -19,13 +18,20 @@ type MediaFile = { file: File; kind: "photo" | "video" };
 
 export function IssueForm({ locale }: { locale: string }) {
   const t = useTranslations("issues");
-  const router = useRouter();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [category, setCategory] = useState(CATEGORIES[0]!);
   const [body, setBody] = useState("");
   const [landmark, setLandmark] = useState("");
   const [media, setMedia] = useState<MediaFile[]>([]);
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   function handleMediaChange(e: React.ChangeEvent<HTMLInputElement>) {
     const picked = Array.from(e.target.files ?? []);
@@ -75,31 +81,70 @@ export function IssueForm({ locale }: { locale: string }) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSubmitted(false);
 
-    const formData = new FormData();
-    formData.append("category", category);
-    formData.append("body", body);
-    if (landmark) formData.append("landmark", landmark);
-    formData.append("locale", locale);
-    for (const item of media) {
-      formData.append("media", item.file);
+    try {
+      const formData = new FormData();
+      formData.append("category", category);
+      formData.append("body", body);
+      if (landmark) formData.append("landmark", landmark);
+      formData.append("locale", locale);
+      for (const item of media) {
+        formData.append("media", item.file);
+      }
+
+      const res = await fetch("/api/issues", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      const data = await res.json();
+      setLoading(false);
+
+      if (!res.ok) {
+        setError(
+          (locale === "hi" ? data.error?.messageHi : data.error?.messageEn) ??
+            data.error?.messageEn ??
+            data.error?.messageHi ??
+            t("error")
+        );
+        return;
+      }
+
+      setSubmitted(true);
+      timerRef.current = setTimeout(() => {
+        window.location.assign(`/${locale}/issues?submitted=pending`);
+      }, 1200);
+    } catch (err) {
+      setError(t("error"));
+      setLoading(false);
     }
+  }
 
-    const res = await fetch("/api/issues", {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
-    const data = await res.json();
-    setLoading(false);
-
-    if (!res.ok) {
-      setError(data.error?.messageEn ?? data.error?.messageHi ?? "Failed");
-      return;
-    }
-
-    router.push("/issues");
-    router.refresh();
+  if (submitted) {
+    return (
+      <div className={`space-y-4 text-center py-8 ${cardClass}`}>
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400">
+          <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <p role="status" className="text-base font-semibold text-emerald-800 dark:text-emerald-300">
+          {t("pending")}
+        </p>
+        <p className="text-sm text-gray-500 dark:text-neutral-400">
+          {locale === "hi"
+            ? "कृपया प्रतीक्षा करें, आपको समस्याओं की सूची पर ले जाया जा रहा है..."
+            : "Redirecting to issues, please wait..."}
+        </p>
+        <a
+          href={`/${locale}/issues?submitted=pending`}
+          className="inline-block text-xs text-[#3a00ff] underline dark:text-blue-400"
+        >
+          {locale === "hi" ? "यदि स्वतः न खुले तो यहाँ क्लिक करें" : "Click here if not redirected automatically"}
+        </a>
+      </div>
+    );
   }
 
   return (
@@ -114,7 +159,7 @@ export function IssueForm({ locale }: { locale: string }) {
         >
           {CATEGORIES.map((c) => (
             <option key={c} value={c}>
-              {c}
+                {t(`categories.${c}`)}
             </option>
           ))}
         </select>
