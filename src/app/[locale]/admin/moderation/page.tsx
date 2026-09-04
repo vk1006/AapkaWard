@@ -104,7 +104,7 @@ export default function AdminModerationPage() {
           issues.map((item) => (
             <div key={item.id} className={listCardClass}>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-medium uppercase text-orange-600 dark:text-orange-400">
+                <span className="text-xs font-medium uppercase text-[#3a00ff] dark:text-white">
                   {item.category}
                 </span>
                 <StatusBadge status={item.moderationStatus} />
@@ -149,7 +149,7 @@ export default function AdminModerationPage() {
           suggestions.map((item) => (
             <div key={item.id} className={listCardClass}>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-medium uppercase text-orange-600 dark:text-orange-400">
+                <span className="text-xs font-medium uppercase text-[#3a00ff] dark:text-white">
                   {item.category}
                 </span>
                 <StatusBadge status={item.moderationStatus} />
@@ -194,7 +194,7 @@ export default function AdminModerationPage() {
           petitions.map((item) => (
             <div key={item.id} className={listCardClass}>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-medium text-orange-700 dark:text-orange-300">
+                <span className="text-sm font-medium text-[#3a00ff] dark:text-white">
                   {item.authorityName}
                 </span>
                 <StatusBadge status={item.status} />
@@ -219,14 +219,14 @@ function StatusBadge({ status }: { status: string }) {
     pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200",
     approved: "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200",
     rejected: "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200",
-    collecting: "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200",
+    collecting: "bg-[#eef7fc] text-[#25115d] dark:bg-neutral-800 dark:text-white",
     threshold_met: "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-200",
-    sent: "bg-gray-100 text-gray-800 dark:bg-stone-700 dark:text-stone-200",
+    sent: "bg-gray-100 text-gray-800 dark:bg-neutral-700 dark:text-neutral-200",
   };
 
   return (
     <span
-      className={`rounded-full px-2 py-0.5 text-xs font-medium ${colors[status] ?? "bg-gray-100 text-gray-700 dark:bg-stone-700 dark:text-stone-200"}`}
+      className={`rounded-full px-2 py-0.5 text-xs font-medium ${colors[status] ?? "bg-gray-100 text-gray-700 dark:bg-neutral-700 dark:text-neutral-200"}`}
     >
       {status.replace("_", " ")}
     </span>

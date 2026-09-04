@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getContainer } from "@/infrastructure/container";
 import { jsonOk, jsonError } from "@/shared/api-response";
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
     const body = schema.parse(await request.json());
     const { platform } = getContainer();
     await platform.setFlag(body.key, body.enabled, admin.id);
+    revalidatePath("/", "layout");
     return jsonOk({ ok: true });
   } catch (error) {
     return jsonError(error);

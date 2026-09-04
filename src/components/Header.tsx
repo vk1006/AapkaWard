@@ -9,6 +9,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { LogoutButton } from "./LogoutButton";
 import { useAuth } from "@/components/AuthProvider";
 import { navLinkActiveClass, navLinkClass } from "@/components/ui";
+import { SiteLogo } from "@/components/SiteLogo";
 
 type NavItem = { href: "/manifesto" | "/suggestions" | "/issues" | "/events" | "/about"; label: string };
 
@@ -55,8 +56,8 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
     const active = isNavActive(pathname, href);
     if (mobile) {
       return active
-        ? "block rounded-lg bg-orange-50 px-3 py-3 text-base font-semibold text-orange-700 dark:bg-stone-800 dark:text-orange-300"
-        : "block rounded-lg px-3 py-3 text-base font-medium text-gray-800 transition-colors hover:bg-orange-50 dark:text-stone-200 dark:hover:bg-stone-800";
+        ? "block rounded-xl bg-[#e7e1ff] px-3 py-3 text-base font-semibold text-[#3b14f5] dark:bg-white dark:text-black"
+        : "block rounded-xl px-3 py-3 text-base font-medium text-slate-800 transition-colors hover:bg-[#eef7fc] dark:text-neutral-200 dark:hover:bg-neutral-800";
     }
     return active ? navLinkActiveClass : navLinkClass;
   }
@@ -65,7 +66,7 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
     if (loading) {
       return (
         <span
-          className={`inline-block animate-pulse rounded-lg bg-orange-100 ${
+          className={`inline-block animate-pulse rounded-full bg-[#e7e1ff] ${
             mobile ? "h-11 w-full" : "h-9 w-20"
           }`}
           aria-hidden
@@ -83,8 +84,8 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
         onClick={() => setOpen(false)}
         className={
           mobile
-            ? "flex min-h-11 w-full items-center justify-center rounded-lg bg-orange-600 px-4 py-2 font-medium text-white transition-colors hover:bg-orange-700"
-            : "rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+            ? "flex min-h-11 w-full items-center justify-center rounded-full bg-[#3b14f5] px-4 py-2 font-bold text-white transition-colors hover:bg-[#2510bd]"
+            : "rounded-full bg-[#3b14f5] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#2510bd] focus:outline-none focus:ring-2 focus:ring-[#3b14f5] focus:ring-offset-2"
         }
       >
         {t("login")}
@@ -93,13 +94,19 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-orange-200 bg-white/95 backdrop-blur-sm dark:border-stone-700 dark:bg-stone-900/95">
+    <header className="sticky top-0 z-40 border-b border-[#c7deec] bg-[#eef7fc]/90 backdrop-blur-md dark:border-neutral-700 dark:bg-black/90">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
         <Link
           href="/"
-          className="rounded-md px-1 text-lg font-bold text-orange-700 transition-colors hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:text-orange-300 dark:hover:text-orange-200"
+          className="group flex items-center gap-2 rounded-full py-1 pr-3 text-[#25115d] transition-colors hover:text-[#3b14f5] focus:outline-none focus:ring-2 focus:ring-[#3b14f5]/20 dark:text-white dark:hover:text-neutral-300"
         >
-          {site("brand")}
+          <SiteLogo className="h-9 w-9 shrink-0 text-[#3a00ff] transition-transform duration-200 group-hover:-rotate-3 group-hover:scale-105" />
+          <span className="text-left leading-none">
+            <span className="block text-base font-extrabold tracking-tight sm:text-lg">{site("brand")}</span>
+            <span className="mt-1 hidden text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#3a00ff]/70 sm:block dark:text-neutral-400">
+              {site("tagline")}
+            </span>
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
@@ -129,7 +136,7 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
             aria-label="Menu"
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-orange-200 bg-white text-orange-800 transition-colors hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:border-stone-600 dark:bg-stone-800 dark:text-orange-300 dark:hover:bg-stone-700"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#c7deec] bg-white text-[#3b14f5] transition-colors hover:bg-[#e7e1ff] focus:outline-none focus:ring-2 focus:ring-[#3b14f5]/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               {open ? (
@@ -153,16 +160,16 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
               onClick={() => setOpen(false)}
             />
             <nav
-              className="animate-drawer-in fixed right-0 top-0 z-[110] flex h-[100dvh] w-[min(100%,18rem)] flex-col border-l border-orange-100 bg-white shadow-xl dark:border-stone-700 dark:bg-stone-900 lg:hidden"
+              className="animate-drawer-in fixed right-0 top-0 z-[110] flex h-[100dvh] w-[min(100%,18rem)] flex-col border-l border-[#c7deec] bg-[#f8fcff] shadow-xl dark:border-neutral-700 dark:bg-neutral-900 lg:hidden"
               aria-label="Mobile"
             >
-              <div className="flex items-center justify-between border-b border-orange-100 px-4 py-3 dark:border-stone-700">
-                <span className="font-semibold text-orange-800 dark:text-orange-300">{t("home")}</span>
+              <div className="flex items-center justify-between border-b border-[#d9e9f2] px-4 py-3 dark:border-neutral-700">
+                <span className="font-semibold text-[#25115d] dark:text-white">{t("home")}</span>
                 <button
                   type="button"
                   aria-label="Close menu"
                   onClick={() => setOpen(false)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 hover:bg-orange-50 dark:text-stone-300 dark:hover:bg-stone-800"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-600 hover:bg-[#e7e1ff] dark:text-neutral-300 dark:hover:bg-neutral-800"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M6 6l12 12M18 6L6 18" />
@@ -190,7 +197,7 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
                   </Link>
                 )}
               </div>
-              <div className="border-t border-orange-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-stone-700">
+              <div className="border-t border-[#d9e9f2] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-neutral-700">
                 <AuthControls mobile />
               </div>
             </nav>
@@ -205,10 +212,16 @@ export function PageShell({ children }: { children: React.ReactNode }) {
   const site = useTranslations("site");
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-orange-50 text-gray-900 dark:bg-stone-950 dark:text-stone-100">
+    <div className="flex min-h-screen w-full flex-col bg-[#eef7fc] text-slate-900 dark:bg-black dark:text-white">
       {children}
-      <footer className="mt-auto border-t border-orange-200 bg-white px-4 py-6 text-center text-sm text-gray-500 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-400">
-        {site("footer")}
+      <footer className="mt-auto border-t border-[#c7deec] bg-white px-4 py-7 dark:border-neutral-700 dark:bg-neutral-900">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 text-center sm:flex-row sm:justify-between sm:text-left">
+          <div className="flex items-center gap-2 text-[#25115d] dark:text-white">
+            <SiteLogo className="h-8 w-8 text-[#3a00ff]" />
+            <span className="font-bold">{site("brand")}</span>
+          </div>
+          <p className="max-w-md text-sm text-slate-500 dark:text-neutral-300">{site("footer")}</p>
+        </div>
       </footer>
     </div>
   );

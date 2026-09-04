@@ -130,7 +130,7 @@ export function IssueForm({ locale }: { locale: string }) {
           required
           className={textareaClass}
         />
-        <p className="mt-1 text-right text-xs text-gray-400 dark:text-stone-500">{body.length}/2000</p>
+        <p className="mt-1 text-right text-xs text-gray-400 dark:text-neutral-500">{body.length}/2000</p>
       </div>
       <div>
         <label className="mb-1 block text-sm font-medium">{t("landmark")}</label>
@@ -148,7 +148,7 @@ export function IssueForm({ locale }: { locale: string }) {
           accept={ACCEPTED_MEDIA_ACCEPT}
           multiple
           onChange={handleMediaChange}
-          className="w-full rounded-lg border border-dashed border-orange-200 bg-orange-50/50 p-3 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-orange-600 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-orange-700 dark:border-stone-600 dark:bg-stone-800/50"
+          className="w-full rounded-lg border border-dashed border-[#c7deec] bg-[#eef7fc]/50 p-3 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#3a00ff] file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-[#2600b3] dark:border-neutral-700 dark:bg-neutral-900"
         />
         {media.length > 0 && (
           <ul className={`mt-2 space-y-1 text-sm ${mutedTextClass}`}>

@@ -1,4 +1,4 @@
-import { eq, and, gte, lte, sql, desc } from "drizzle-orm";
+import { eq, and, gte, lte, sql, desc, inArray } from "drizzle-orm";
 import type { AppDatabase } from "@/infrastructure/adapters/database/postgres";
 import type { ClockPort } from "@/infrastructure/ports/clock";
 import { events, eventRsvps } from "@/infrastructure/db/schema";
@@ -6,11 +6,73 @@ import { DEFAULT_TENANT_ID } from "@/infrastructure/db/schema";
 import { AppError } from "@/shared/errors";
 import type { RsvpStatus } from "@/shared/types";
 
+export type PublicEventWithCount = typeof events.$inferSelect & { goingCount: number };
+
 export class EventsService {
+  private static publicEventsCache: PublicEventWithCount[] | null = null;
+  private static publicEventsCacheExpiresAt = 0;
+
+  static clearCache(): void {
+    EventsService.publicEventsCache = null;
+    EventsService.publicEventsCacheExpiresAt = 0;
+  }
+
   constructor(
     private readonly db: AppDatabase,
     private readonly clock: ClockPort
   ) {}
+
+  async listPublicWithCounts(from?: Date, to?: Date): Promise<PublicEventWithCount[]> {
+    const isDefaultQuery = !from && !to;
+    const now = Date.now();
+    if (isDefaultQuery && EventsService.publicEventsCache && EventsService.publicEventsCacheExpiresAt > now) {
+      return EventsService.publicEventsCache;
+    }
+
+    const conditions = [
+      eq(events.tenantId, DEFAULT_TENANT_ID),
+      eq(events.published, true),
+    ];
+    if (from) conditions.push(gte(events.startsAt, from));
+    if (to) conditions.push(lte(events.startsAt, to));
+
+    const eventList = await this.db
+      .select()
+      .from(events)
+      .where(and(...conditions))
+      .orderBy(events.startsAt);
+
+    if (eventList.length === 0) {
+      if (isDefaultQuery) {
+        EventsService.publicEventsCache = [];
+        EventsService.publicEventsCacheExpiresAt = now + 60_000;
+      }
+      return [];
+    }
+
+    const eventIds = eventList.map((e) => e.id);
+    const rsvpCounts = await this.db
+      .select({
+        eventId: eventRsvps.eventId,
+        goingCount: sql<number>`count(*)::int`,
+      })
+      .from(eventRsvps)
+      .where(and(inArray(eventRsvps.eventId, eventIds), eq(eventRsvps.status, "going")))
+      .groupBy(eventRsvps.eventId);
+
+    const countMap = new Map(rsvpCounts.map((r) => [r.eventId, r.goingCount]));
+    const result: PublicEventWithCount[] = eventList.map((e) => ({
+      ...e,
+      goingCount: countMap.get(e.id) ?? 0,
+    }));
+
+    if (isDefaultQuery) {
+      EventsService.publicEventsCache = result;
+      EventsService.publicEventsCacheExpiresAt = now + 60_000;
+    }
+
+    return result;
+  }
 
   async listPublic(from?: Date, to?: Date) {
     const conditions = [
@@ -54,12 +116,14 @@ export class EventsService {
     capacity?: number;
     published: boolean;
   }) {
+    EventsService.clearCache();
     if (data.id) {
       const [updated] = await this.db
         .update(events)
         .set({ ...data, updatedAt: this.clock.now() })
         .where(eq(events.id, data.id))
         .returning();
+      EventsService.clearCache();
       return updated!;
     }
 
@@ -67,6 +131,7 @@ export class EventsService {
       .insert(events)
       .values({ tenantId: DEFAULT_TENANT_ID, ...data })
       .returning();
+    EventsService.clearCache();
     return created!;
   }
 
@@ -76,6 +141,7 @@ export class EventsService {
       throw new AppError("NOT_FOUND", "कार्यक्रम नहीं मिला।", "Event not found.", 404);
     }
     await this.db.delete(events).where(eq(events.id, id));
+    EventsService.clearCache();
     return event;
   }
 
@@ -109,6 +175,7 @@ export class EventsService {
         })
         .where(eq(eventRsvps.id, existing.id))
         .returning();
+      EventsService.clearCache();
       return updated!;
     }
 
@@ -116,6 +183,7 @@ export class EventsService {
       .insert(eventRsvps)
       .values({ eventId, userId, status })
       .returning();
+    EventsService.clearCache();
     return created!;
   }
 

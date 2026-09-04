@@ -11,7 +11,11 @@ export class PostgresDatabaseAdapter implements DatabasePort {
   private readonly db: AppDatabase;
 
   constructor(connectionString: string) {
-    this.client = postgres(connectionString, { max: 10 });
+    this.client = postgres(connectionString, {
+      max: process.env.NODE_ENV === "production" ? 1 : 10,
+      idle_timeout: 20,
+      connect_timeout: 10,
+    });
     this.db = drizzle(this.client, { schema });
   }
 

@@ -17,7 +17,7 @@ export function AdminNav() {
   const t = useTranslations("admin");
 
   return (
-    <nav className="flex gap-1 overflow-x-auto border-b border-orange-200 pb-px text-sm scrollbar-none dark:border-stone-700">
+    <nav className="flex gap-1 overflow-x-auto border-b border-[#c7deec] pb-px text-sm scrollbar-none dark:border-neutral-700">
       {links.map((link) => {
         const active = link.exact ? pathname === link.href : pathname.startsWith(link.href);
         return (
@@ -26,8 +26,8 @@ export function AdminNav() {
             href={link.href}
             className={`shrink-0 border-b-2 px-3 py-2 font-medium transition-colors ${
               active
-                ? "border-orange-600 text-orange-700 dark:border-orange-400 dark:text-orange-300"
-                : "border-transparent text-gray-600 hover:border-orange-200 hover:text-orange-600 dark:text-stone-400 dark:hover:border-stone-600 dark:hover:text-orange-400"
+                ? "border-[#3a00ff] text-[#3a00ff] dark:border-white dark:text-white"
+                : "border-transparent text-gray-600 hover:border-[#c7deec] hover:text-[#3a00ff] dark:text-neutral-400 dark:hover:border-neutral-700 dark:hover:text-white"
             }`}
           >
             {link.labelKey === "dashboard" ? "Dashboard" : t(link.labelKey)}

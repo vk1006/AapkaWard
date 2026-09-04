@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -14,29 +14,8 @@ import { safeNextPath } from "@/shared/safe-next";
 import { useAuth, type AuthUser } from "@/components/AuthProvider";
 import { btnPrimaryClass, cardClass, inputClass, mutedTextClass } from "@/components/ui";
 import { devLogError, isDevelopment, isLocalDevHost } from "@/shared/is-local-dev";
-import { removeRecaptchaArtifacts } from "@/lib/recaptcha-cleanup";
 
 const RECAPTCHA_CONTAINER_ID = "firebase-recaptcha";
-
-/** Invisible reCAPTCHA is unreliable on phones; use the visible widget instead. */
-function useMobileRecaptcha(): boolean {
-  const [mobile, setMobile] = useState(false);
-
-  useEffect(() => {
-    const narrow = window.matchMedia("(max-width: 640px)");
-    const coarse = window.matchMedia("(pointer: coarse)");
-    const update = () => setMobile(narrow.matches || coarse.matches);
-    update();
-    narrow.addEventListener("change", update);
-    coarse.addEventListener("change", update);
-    return () => {
-      narrow.removeEventListener("change", update);
-      coarse.removeEventListener("change", update);
-    };
-  }, []);
-
-  return mobile;
-}
 
 function getFirebaseOtpSendError(error: unknown, locale: string): string {
   const code = (error as { code?: string })?.code;
@@ -129,119 +108,147 @@ export function LoginForm() {
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [recaptchaReady, setRecaptchaReady] = useState(false);
+  const [captchaSolved, setCaptchaSolved] = useState(false);
+  const isLocalhost = useSyncExternalStore(
+    () => () => {},
+    () => typeof window !== "undefined" && isLocalDevHost() && window.location.hostname === "localhost",
+    () => false
+  );
   const isMock = !isFirebaseOtpConfigured();
-  const mobileRecaptcha = useMobileRecaptcha();
-  const [hostWarning, setHostWarning] = useState("");
+
   const confirmationRef = useRef<ConfirmationResult | null>(null);
-  const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
-  const recaptchaModeRef = useRef<boolean | null>(null);
+  const recaptchaVerifierRef = useRef<RecaptchaVerifier | null>(null);
+  const widgetIdRef = useRef<number | null>(null);
 
-  async function destroyRecaptcha() {
-    try {
-      await recaptchaRef.current?.clear();
-    } catch {
-      // Widget may already be torn down.
-    }
-    recaptchaRef.current = null;
-    recaptchaModeRef.current = null;
-    setRecaptchaReady(false);
-    const el = document.getElementById(RECAPTCHA_CONTAINER_ID);
-    el?.replaceChildren();
-    removeRecaptchaArtifacts();
-  }
+  const hostWarning = isLocalhost
+    ? (locale === "hi"
+        ? "Firebase Phone OTP localhost पर काम नहीं करता। http://127.0.0.1:3000 खोलें।"
+        : "Firebase Phone OTP does not work on localhost. Use http://127.0.0.1:3000 instead.")
+    : "";
 
-  async function ensureRecaptchaVerifier(visible: boolean): Promise<RecaptchaVerifier> {
-    if (
-      recaptchaRef.current &&
-      recaptchaModeRef.current === visible &&
-      document.getElementById(RECAPTCHA_CONTAINER_ID)?.childElementCount
-    ) {
-      return recaptchaRef.current;
-    }
-
-    await destroyRecaptcha();
-
-    const container = document.getElementById(RECAPTCHA_CONTAINER_ID);
-    if (!container) {
-      throw new Error("reCAPTCHA container missing");
-    }
-
-    const auth = getFirebaseAuth();
-    const verifier = new RecaptchaVerifier(auth, RECAPTCHA_CONTAINER_ID, {
-      size: visible ? "normal" : "invisible",
-      callback: () => setRecaptchaReady(true),
-      "expired-callback": () => {
-        void destroyRecaptcha();
-      },
-      "error-callback": () => {
-        void destroyRecaptcha();
-      },
-    });
-
-    await verifier.render();
-    recaptchaRef.current = verifier;
-    recaptchaModeRef.current = visible;
-    setRecaptchaReady(true);
-    return verifier;
-  }
-
+  // Initialize visible reCAPTCHA on the phone step
   useEffect(() => {
-    if (!isLocalDevHost() || typeof window === "undefined") return;
-    if (window.location.hostname === "localhost") {
-      setHostWarning(
+    if (isMock || step !== "phone") return;
+
+    let isMounted = true;
+
+    const timer = setTimeout(() => {
+      if (!isMounted || recaptchaVerifierRef.current) return;
+
+      const container = document.getElementById(RECAPTCHA_CONTAINER_ID);
+      if (!container) return;
+
+      try {
+        const auth = getFirebaseAuth();
+        container.innerHTML = "";
+
+        const verifier = new RecaptchaVerifier(auth, RECAPTCHA_CONTAINER_ID, {
+          size: "normal",
+          callback: () => {
+            if (isMounted) {
+              setCaptchaSolved(true);
+              setError("");
+            }
+          },
+          "expired-callback": () => {
+            if (isMounted) {
+              setCaptchaSolved(false);
+            }
+          },
+          "error-callback": () => {
+            if (isMounted) {
+              setCaptchaSolved(false);
+            }
+          },
+        });
+
+        verifier
+          .render()
+          .then((widgetId) => {
+            if (isMounted) {
+              widgetIdRef.current = widgetId;
+              recaptchaVerifierRef.current = verifier;
+            } else {
+              try {
+                verifier.clear();
+              } catch {
+                // ignore
+              }
+            }
+          })
+          .catch((err) => {
+            if (isMounted) {
+              devLogError("reCAPTCHA render error:", err);
+              setError(getFirebaseOtpSendError(err, locale));
+            }
+          });
+      } catch (err) {
+        if (isMounted) {
+          devLogError("reCAPTCHA creation error:", err);
+          setError(getFirebaseOtpSendError(err, locale));
+        }
+      }
+    }, 50);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+      if (recaptchaVerifierRef.current) {
+        try {
+          recaptchaVerifierRef.current.clear();
+        } catch {
+          // ignore
+        }
+        recaptchaVerifierRef.current = null;
+        widgetIdRef.current = null;
+      }
+    };
+  }, [isMock, step, locale]);
+
+  async function handleSendOtp() {
+    if (!isMock && !captchaSolved) {
+      setError(
         locale === "hi"
-          ? "Firebase Phone OTP localhost पर काम नहीं करता। http://127.0.0.1:3000 खोलें।"
-          : "Firebase Phone OTP does not work on localhost. Use http://127.0.0.1:3000 instead."
+          ? "कृपया पहले ऊपर दिए गए reCAPTCHA चेकबॉक्स को पूरा करें।"
+          : "Please complete the reCAPTCHA checkbox above before requesting OTP."
       );
-    }
-  }, [locale]);
-
-  useEffect(() => {
-    if (isMock || step !== "phone") {
-      if (step === "otp") void destroyRecaptcha();
       return;
     }
 
-    let cancelled = false;
-    setRecaptchaReady(false);
-
-    void ensureRecaptchaVerifier(mobileRecaptcha).catch((err) => {
-      if (!cancelled) {
-        devLogError("reCAPTCHA init failed:", err);
-        setError(getFirebaseOtpSendError(err, locale));
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-init when mobile layout changes
-  }, [isMock, mobileRecaptcha, step]);
-
-  useEffect(() => {
-    return () => {
-      void destroyRecaptcha();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function handleSendOtp() {
     setLoading(true);
     setError("");
 
     try {
       const auth = getFirebaseAuth();
-      const verifier = await ensureRecaptchaVerifier(mobileRecaptcha);
-      confirmationRef.current = await signInWithPhoneNumber(auth, phone.trim(), verifier);
-      await destroyRecaptcha();
+      if (!recaptchaVerifierRef.current) {
+        throw new Error("reCAPTCHA is not ready. Please refresh the page.");
+      }
+
+      confirmationRef.current = await signInWithPhoneNumber(
+        auth,
+        phone.trim(),
+        recaptchaVerifierRef.current
+      );
       setStep("otp");
     } catch (err) {
+      devLogError("Firebase OTP send error:", err);
       setError(getFirebaseOtpSendError(err, locale));
-      await destroyRecaptcha();
-      if (!isMock && step === "phone") {
-        void ensureRecaptchaVerifier(mobileRecaptcha).catch(() => undefined);
+
+      // Reset the captcha widget so user can check it again cleanly without page refresh
+      if (
+        typeof window !== "undefined" &&
+        (window as unknown as { grecaptcha?: { reset: (id: number) => void } }).grecaptcha &&
+        widgetIdRef.current !== null
+      ) {
+        try {
+          (window as unknown as { grecaptcha: { reset: (id: number) => void } }).grecaptcha.reset(
+            widgetIdRef.current
+          );
+        } catch {
+          // ignore
+        }
       }
+      setCaptchaSolved(false);
     } finally {
       setLoading(false);
     }
@@ -267,19 +274,20 @@ export function LoginForm() {
           const idToken = await credential.user.getIdToken(true);
           body = { idToken };
         } catch (err) {
-          const code = (err as { code?: string })?.code;
+          const errCode = (err as { code?: string })?.code;
           devLogError("Firebase OTP confirm failed:", err);
-          if (code === "auth/invalid-verification-code") {
+          if (errCode === "auth/invalid-verification-code") {
             setError(locale === "hi" ? "गलत OTP। सही कोड डालें।" : "Wrong OTP. Enter the code from your SMS.");
             return;
           }
-          if (code === "auth/code-expired") {
+          if (errCode === "auth/code-expired") {
             setError(
               locale === "hi"
                 ? "OTP समाप्त हो गया। फिर से OTP भेजें।"
                 : "OTP expired. Send OTP again."
             );
             setStep("phone");
+            setCaptchaSolved(false);
             confirmationRef.current = null;
             return;
           }
@@ -312,8 +320,6 @@ export function LoginForm() {
         locale: data.user.locale,
       };
       setUser(loggedIn);
-      await destroyRecaptcha();
-      removeRecaptchaArtifacts();
 
       const next = safeNextPath(searchParams.get("next"), "/suggestions");
       router.push(next);
@@ -326,9 +332,13 @@ export function LoginForm() {
     }
   }
 
+  const phoneDigits = phone.replace(/\D/g, "");
+  const isPhoneValid = phoneDigits.length >= 10;
+  const canSendOtp = isMock ? isPhoneValid : (isPhoneValid && captchaSolved);
+
   return (
     <form onSubmit={handleVerify} className={`mx-auto w-full max-w-md space-y-4 ${cardClass}`}>
-      <h1 className="text-2xl font-bold text-orange-700 dark:text-orange-300">{t("title")}</h1>
+      <h1 className="text-2xl font-bold text-[#3a00ff] dark:text-white">{t("title")}</h1>
 
       {hostWarning && (
         <p className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100">
@@ -341,35 +351,40 @@ export function LoginForm() {
         <input
           type="tel"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => {
+            setPhone(e.target.value);
+            setError("");
+          }}
           className={inputClass}
           required
           disabled={step === "otp"}
           autoComplete="tel"
+          placeholder="+91 9876543210"
         />
       </div>
 
       {!isMock && step === "phone" && (
-        <>
-          {mobileRecaptcha && (
-            <p className={`text-xs ${mutedTextClass}`}>{t("recaptchaHint")}</p>
-          )}
+        <div className="space-y-2 py-1">
+          <p className={`text-xs ${mutedTextClass}`}>{t("recaptchaHint")}</p>
           <div
             id={RECAPTCHA_CONTAINER_ID}
-            className={
-              mobileRecaptcha
-                ? "flex min-h-[78px] justify-center overflow-x-auto py-1"
-                : "min-h-px"
-            }
+            className="flex min-h-[78px] items-center justify-center rounded-lg border border-dashed border-[#c7deec]/80 bg-[#eef7fc]/20 p-2 dark:border-neutral-700 dark:bg-neutral-900"
           />
-        </>
+          {!captchaSolved && isPhoneValid && (
+            <p className="text-xs text-amber-700 dark:text-amber-400">
+              {locale === "hi"
+                ? "कृपया आगे बढ़ने के लिए ऊपर दिए गए चेकबॉक्स को पूरा करें।"
+                : "Please check the box above to enable OTP generation."}
+            </p>
+          )}
+        </div>
       )}
 
       {step === "phone" ? (
         <button
           type="button"
           onClick={isMock ? () => setStep("otp") : handleSendOtp}
-          disabled={loading || (!isMock && !recaptchaReady)}
+          disabled={loading || !canSendOtp}
           className={btnPrimaryClass}
           aria-busy={loading}
         >
@@ -396,10 +411,22 @@ export function LoginForm() {
           <button type="submit" disabled={loading} className={btnPrimaryClass} aria-busy={loading}>
             {loading ? "..." : t("verify")}
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setStep("phone");
+              setCode("");
+              setError("");
+              setCaptchaSolved(false);
+            }}
+            className="w-full text-center text-xs font-semibold text-[#3a00ff] hover:underline dark:text-white"
+          >
+            {locale === "hi" ? "← नंबर बदलें / पुनः OTP भेजें" : "← Change number / Resend OTP"}
+          </button>
         </div>
       )}
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm font-medium text-red-600">{error}</p>}
 
       {!isMock && (
         <p className={`text-[10px] leading-snug ${mutedTextClass}`}>{t("recaptchaLegal")}</p>

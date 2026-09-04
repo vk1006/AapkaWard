@@ -1,50 +1,49 @@
 /** Shared Tailwind class strings for consistent UI across the app. */
 
 export const inputClass =
-  "min-h-11 w-full rounded-lg border border-orange-200 bg-white px-3 py-2 text-base text-gray-900 transition-colors placeholder:text-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-orange-500";
+  "min-h-11 w-full rounded-xl border border-[#c7deec] bg-white px-3 py-2 text-base text-slate-900 transition-colors placeholder:text-slate-400 focus:border-[#3b14f5] focus:outline-none focus:ring-2 focus:ring-[#3b14f5]/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white";
 
 export const textareaClass =
-  "w-full rounded-lg border border-orange-200 bg-white px-3 py-2 text-base text-gray-900 transition-colors placeholder:text-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-orange-500";
+  "w-full rounded-xl border border-[#c7deec] bg-white px-3 py-2 text-base text-slate-900 transition-colors placeholder:text-slate-400 focus:border-[#3b14f5] focus:outline-none focus:ring-2 focus:ring-[#3b14f5]/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white";
 
 export const selectClass =
-  "min-h-11 w-full rounded-lg border border-orange-200 bg-white px-3 py-2 text-base text-gray-900 transition-colors focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100 dark:focus:border-orange-500";
+  "min-h-11 w-full rounded-xl border border-[#c7deec] bg-white px-3 py-2 text-base text-slate-900 transition-colors focus:border-[#3b14f5] focus:outline-none focus:ring-2 focus:ring-[#3b14f5]/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white";
 
 export const btnPrimaryClass =
-  "inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-orange-600 px-6 py-2 font-medium text-white transition-all hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-stone-900 sm:w-auto";
+  "inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#3b14f5] px-6 py-2 font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#2510bd] focus:outline-none focus:ring-2 focus:ring-[#3b14f5] focus:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto";
 
 export const btnSecondaryClass =
-  "inline-flex min-h-10 items-center justify-center rounded-lg border border-orange-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700";
+  "inline-flex min-h-10 items-center justify-center rounded-full border border-[#c7deec] bg-white px-4 py-2 text-sm font-bold text-[#25115d] transition-colors hover:bg-[#eef7fc] focus:outline-none focus:ring-2 focus:ring-[#3a00ff]/25 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800";
 
 export const cardClass =
-  "rounded-xl bg-white p-4 shadow-sm ring-1 ring-orange-100 transition-shadow hover:shadow-md dark:bg-stone-900 dark:ring-stone-700 dark:hover:shadow-lg dark:hover:shadow-black/20 sm:p-6";
+  "rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#d9e9f2] transition-shadow hover:shadow-md dark:bg-neutral-900 dark:ring-neutral-700 dark:hover:shadow-lg dark:hover:shadow-black/20 sm:p-6";
 
 export const listCardClass =
-  "rounded-xl bg-white p-4 shadow-sm ring-1 ring-orange-100 transition-shadow hover:shadow-md dark:bg-stone-900 dark:ring-stone-700 dark:hover:shadow-lg dark:hover:shadow-black/20";
+  "rounded-2xl bg-white p-4 shadow-sm ring-1 ring-[#d9e9f2] transition-shadow hover:shadow-md dark:bg-neutral-900 dark:ring-neutral-700 dark:hover:shadow-lg dark:hover:shadow-black/20";
 
 export const navLinkClass =
-  "rounded-md px-2 py-1 text-sm font-medium text-gray-700 transition-colors hover:bg-orange-50 hover:text-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-orange-300";
+  "rounded-full px-3 py-1.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-[#eef7fc] hover:text-[#3b14f5] focus:outline-none focus:ring-2 focus:ring-[#3b14f5]/20 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white";
 
 export const navLinkActiveClass =
-  "rounded-md bg-orange-50 px-2 py-1 text-sm font-semibold text-orange-700 dark:bg-stone-800 dark:text-orange-300";
+  "rounded-full bg-[#e7e1ff] px-3 py-1.5 text-sm font-bold text-[#3b14f5] dark:bg-white dark:text-black";
 
 export const emptyStateClass =
-  "rounded-xl bg-white p-6 text-gray-600 shadow-sm ring-1 ring-orange-100 dark:bg-stone-900 dark:text-stone-400 dark:ring-stone-700";
+  "rounded-2xl bg-white p-6 text-slate-600 shadow-sm ring-1 ring-[#d9e9f2] dark:bg-neutral-900 dark:text-neutral-300 dark:ring-neutral-700";
 
 export const sectionHeadingClass =
-  "text-lg font-semibold text-orange-800 dark:text-orange-300";
+  "text-lg font-semibold text-[#25115d] dark:text-white";
 
 export const accentPanelClass =
-  "rounded-xl border border-orange-200 bg-orange-50 p-6 dark:border-stone-600 dark:bg-stone-800/60";
+  "rounded-2xl border border-[#c7deec] bg-[#e2f0f8] p-6 dark:border-neutral-700 dark:bg-neutral-900";
 
-export const bodyTextClass = "text-gray-700 dark:text-stone-300";
+export const bodyTextClass = "text-slate-700 dark:text-neutral-200";
 
-export const mutedTextClass = "text-sm text-gray-500 dark:text-stone-400";
+export const mutedTextClass = "text-sm text-slate-500 dark:text-neutral-300";
 
 export const badgeClass =
-  "rounded bg-orange-100 px-2 py-1 text-xs font-medium text-orange-700 dark:bg-stone-800 dark:text-orange-300";
+  "rounded-full bg-[#e7e1ff] px-2.5 py-1 text-xs font-bold text-[#3a00ff] dark:bg-neutral-800 dark:text-white";
 
-export const linkAccentClass = "text-orange-600 hover:underline dark:text-orange-400";
+export const linkAccentClass = "font-semibold text-[#3b14f5] hover:underline dark:text-white";
 
 export const proseContentClass =
-  "max-w-none leading-relaxed text-gray-700 dark:text-stone-300 [&_a]:text-orange-600 dark:[&_a]:text-orange-400";
-
+  "max-w-none leading-relaxed text-slate-700 dark:text-neutral-200 [&_a]:text-[#3a00ff] dark:[&_a]:text-white";

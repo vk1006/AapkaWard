@@ -24,7 +24,7 @@ export function IssueMediaStrip({ media }: { media: IssueMediaItem[] }) {
   if (media.length === 0) return null;
 
   return (
-    <div className="relative mt-3 overflow-hidden rounded-lg border border-orange-100 bg-black/5 dark:border-stone-700 dark:bg-stone-950/40">
+    <div className="relative mt-3 overflow-hidden rounded-lg border border-[#c7deec] bg-black/5 dark:border-neutral-700 dark:bg-black">
       <div
         ref={scrollRef}
         onScroll={onScroll}

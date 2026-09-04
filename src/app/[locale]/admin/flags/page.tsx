@@ -39,7 +39,7 @@ export default function AdminFlagsPage() {
         {flags.map((flag) => (
           <li key={flag.key} className={`flex items-center justify-between ${listCardClass}`}>
             <div>
-              <strong className="text-gray-900 dark:text-stone-100">{flag.key}</strong>
+              <strong className="text-gray-900 dark:text-white">{flag.key}</strong>
               {flag.key === "content_freeze" && (
                 <p className={mutedTextClass}>{t("contentFreeze")}</p>
               )}
@@ -50,7 +50,7 @@ export default function AdminFlagsPage() {
               className={`min-h-10 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors ${
                 flag.enabled
                   ? "bg-green-600 hover:bg-green-700"
-                  : "bg-gray-400 hover:bg-gray-500 dark:bg-stone-600 dark:hover:bg-stone-500"
+                  : "bg-gray-400 hover:bg-gray-500 dark:bg-neutral-600 dark:hover:bg-neutral-500"
               }`}
             >
               {flag.enabled ? "ON" : "OFF"}

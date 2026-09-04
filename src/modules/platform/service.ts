@@ -17,11 +17,21 @@ const DEFAULT_FLAGS: Record<string, { enabled: boolean; payload?: Record<string,
 };
 
 export class PlatformService {
+  private static readonly flagCache = new Map<string, { value: boolean; expiresAt: number }>();
+
   constructor(
     private readonly db: AppDatabase,
     private readonly clock: ClockPort,
     private readonly eventBus: EventBusPort
   ) {}
+
+  clearCache(key?: string): void {
+    if (key) {
+      PlatformService.flagCache.delete(key);
+    } else {
+      PlatformService.flagCache.clear();
+    }
+  }
 
   async ensureDefaults(): Promise<void> {
     await Promise.all(
@@ -35,12 +45,20 @@ export class PlatformService {
   }
 
   async isEnabled(key: string): Promise<boolean> {
+    const now = Date.now();
+    const cached = PlatformService.flagCache.get(key);
+    if (cached && cached.expiresAt > now) {
+      return cached.value;
+    }
+
     const [row] = await this.db
       .select()
       .from(featureFlags)
       .where(eq(featureFlags.key, key))
       .limit(1);
-    return row?.enabled ?? DEFAULT_FLAGS[key]?.enabled ?? false;
+    const value = row?.enabled ?? DEFAULT_FLAGS[key]?.enabled ?? false;
+    PlatformService.flagCache.set(key, { value, expiresAt: now + 30_000 });
+    return value;
   }
 
   async requireEnabled(key: string): Promise<void> {
@@ -61,6 +79,8 @@ export class PlatformService {
   }
 
   async setFlag(key: string, enabled: boolean, actorId?: string) {
+    this.clearCache(key);
+
     await this.db
       .insert(featureFlags)
       .values({ key, enabled, payload: {} })
@@ -68,6 +88,8 @@ export class PlatformService {
         target: featureFlags.key,
         set: { enabled, updatedAt: this.clock.now() },
       });
+
+    this.clearCache(key);
 
     await this.audit(actorId, "flag.update", "feature_flag", key, { enabled });
   }

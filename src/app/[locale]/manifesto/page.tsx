@@ -3,6 +3,8 @@ import { getContainer } from "@/infrastructure/container";
 import { WhatsAppShare } from "@/components/WhatsAppShare";
 import { badgeClass, bodyTextClass, cardClass } from "@/components/ui";
 
+export const revalidate = 60;
+
 export default async function ManifestoPage({
   params,
 }: {
@@ -26,7 +28,7 @@ export default async function ManifestoPage({
           return (
             <article key={item.id} id={item.slug} className={`scroll-mt-24 ${cardClass}`}>
               <span className={badgeClass}>{item.theme}</span>
-              <h2 className="mt-2 text-xl font-bold text-gray-900 dark:text-stone-100">{title}</h2>
+              <h2 className="mt-2 text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
               <p className={`mt-3 ${bodyTextClass}`}>{body}</p>
               <div className="mt-4">
                 <WhatsAppShare url={url} text={title} label={t("share")} />
@@ -36,7 +38,7 @@ export default async function ManifestoPage({
         })}
       </div>
       {items.length === 0 && (
-        <p className="text-gray-600 dark:text-stone-400">No manifesto items published yet.</p>
+        <p className="text-gray-600 dark:text-neutral-400">No manifesto items published yet.</p>
       )}
     </div>
   );

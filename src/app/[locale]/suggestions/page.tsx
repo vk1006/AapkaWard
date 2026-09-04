@@ -28,11 +28,11 @@ export default async function SuggestionsPage({
         <ul className="space-y-3">
           {items.map((s) => (
             <li key={s.id} className={listCardClass}>
-              <span className="text-xs font-medium uppercase tracking-wide text-orange-600 dark:text-orange-400">
+              <span className="text-xs font-medium uppercase tracking-wide text-[#3a00ff] dark:text-white">
                 {s.category}
               </span>
-              <p className="mt-1 break-words text-gray-800 dark:text-stone-200">{s.body}</p>
-              {s.landmark && <p className="mt-1 text-sm text-gray-500 dark:text-stone-400">{s.landmark}</p>}
+              <p className="mt-1 break-words text-gray-800 dark:text-neutral-200">{s.body}</p>
+              {s.landmark && <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400">{s.landmark}</p>}
               <AdminCommentLedgerToggle
                 label={t("adminResponse")}
                 teamLabel={t("teamLabel")}

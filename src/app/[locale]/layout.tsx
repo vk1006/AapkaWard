@@ -8,8 +8,6 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { getContainer } from "@/infrastructure/container";
 
-export const dynamic = "force-dynamic";
-
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
@@ -28,7 +26,6 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   const { platform } = getContainer();
-  await platform.ensureDefaults();
   const issuesEnabled = await platform.isEnabled("issues");
 
   return (

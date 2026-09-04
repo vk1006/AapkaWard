@@ -9,6 +9,8 @@ import {
   proseContentClass,
 } from "@/components/ui";
 
+export const revalidate = 300;
+
 export default async function AboutPage({
   params,
 }: {
@@ -19,7 +21,6 @@ export default async function AboutPage({
   const t = await getTranslations("about");
 
   const { content } = getContainer();
-  await content.ensureDefaultPages();
   const about = await content.getPage("about");
   const scope = await content.getPage("panch-scope");
 
@@ -40,7 +41,7 @@ export default async function AboutPage({
 
       {scope && (
         <section className={accentPanelClass}>
-          <h2 className="text-xl font-bold text-orange-800 dark:text-orange-300">
+          <h2 className="text-xl font-bold text-[#3a00ff] dark:text-white">
             {locale === "hi" ? scope.titleHi : scope.titleEn}
           </h2>
           <p className={`mt-3 ${bodyTextClass}`}>

@@ -1,7 +1,8 @@
 {
   "site": {
-    "brand": "Aapka Ward",
-    "footer": "© Aapka Ward — for transparency, participation, and local development."
+    "brand": "Aapka Ward 20",
+    "tagline": "Every voice. Ward 20.",
+    "footer": "© Aapka Ward 20 — for transparency, participation, and local development."
   },
   "nav": {
     "home": "Home",
@@ -15,11 +16,16 @@
     "issues": "Issues"
   },
   "home": {
+    "eyebrow": "Ward 20's local public platform",
     "title": "Your Ward, Your Voice",
     "subtitle": "Report ward issues, share suggestions, and take part in development — openly and accountably.",
     "ctaSuggestions": "Give a suggestion",
     "ctaEvents": "View events",
-    "promiseTitle": "Our priorities"
+    "promiseTitle": "Our priorities",
+    "priorityEyebrow": "Beyond promises",
+    "viewAll": "View full manifesto →",
+    "candidatePhotoLabel": "Candidate photo placeholder",
+    "candidatePhotoHint": "Candidate photo coming soon"
   },
   "manifesto": {
     "title": "Manifesto",

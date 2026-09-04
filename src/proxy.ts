@@ -24,5 +24,5 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/(hi|en)/:path*", "/((?!api|_next|_vercel|.*\\..*).*)"],
+  matcher: ["/", "/(hi|en)/:path*", "/((?!api|_next|_vercel|icon|apple-icon|.*\\..*).*)"],
 };

@@ -7,11 +7,11 @@ export async function IssuesDisabled() {
 
   return (
     <div className={`text-center ${cardClass}`}>
-      <h1 className="text-xl font-bold text-orange-800 dark:text-orange-300">{t("title")}</h1>
-      <p className="mt-3 text-gray-600 dark:text-stone-400">{t("disabled")}</p>
+      <h1 className="text-xl font-bold text-[#3a00ff] dark:text-white">{t("title")}</h1>
+      <p className="mt-3 text-gray-600 dark:text-neutral-400">{t("disabled")}</p>
       <Link
         href="/"
-        className="mt-4 inline-block text-sm text-orange-700 hover:underline dark:text-orange-400"
+        className="mt-4 inline-block text-sm text-[#3a00ff] hover:underline dark:text-white"
       >
         ← {t("backHome")}
       </Link>

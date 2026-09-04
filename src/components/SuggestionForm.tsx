@@ -75,7 +75,7 @@ export function SuggestionForm({ locale }: { locale: string }) {
             required
             minLength={10}
           />
-          <p className="mt-1 text-right text-xs text-gray-400 dark:text-stone-500">{body.length}/500</p>
+          <p className="mt-1 text-right text-xs text-gray-400 dark:text-neutral-500">{body.length}/500</p>
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium">{t("landmark")}</label>

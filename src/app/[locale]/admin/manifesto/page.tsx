@@ -127,7 +127,7 @@ export default function AdminManifestoPage() {
       <ul className="space-y-2">
         {items.map((item) => (
           <li key={item.id} className={`flex items-center justify-between ${listCardClass}`}>
-            <span className="text-gray-900 dark:text-stone-100">
+            <span className="text-gray-900 dark:text-white">
               {item.titleHi} {item.published ? "✓" : "(draft)"}
             </span>
             <button

@@ -19,14 +19,14 @@ export function AdminCommentLedger({
 
   return (
     <div className={`mt-3 ${accentPanelClass}`}>
-      <p className="text-xs font-semibold uppercase tracking-wide text-orange-700 dark:text-orange-300">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[#3a00ff] dark:text-white">
         {label}
       </p>
       <ol className="mt-2 space-y-3">
         {comments.map((comment) => (
-          <li key={comment.id} className="border-t border-orange-200/70 pt-3 first:border-t-0 first:pt-0 dark:border-stone-600">
+          <li key={comment.id} className="border-t border-[#c7deec]/70 pt-3 first:border-t-0 first:pt-0 dark:border-neutral-700">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium text-orange-700 dark:text-orange-300">
+              <span className="text-xs font-medium text-[#3a00ff] dark:text-white">
                 {teamLabel}
               </span>
               <time
@@ -36,7 +36,7 @@ export function AdminCommentLedger({
                 {formatCommentDate(comment.createdAt)}
               </time>
             </div>
-            <p className="mt-1 whitespace-pre-wrap break-words text-sm text-gray-800 dark:text-stone-200">
+            <p className="mt-1 whitespace-pre-wrap break-words text-sm text-gray-800 dark:text-neutral-200">
               {comment.body}
             </p>
           </li>

@@ -50,17 +50,17 @@ export function EventCard({ event, locale, userRsvp, isLoggedIn, shareUrl }: Eve
   return (
     <article
       id={event.id}
-      className="scroll-mt-24 rounded-xl bg-white p-6 shadow-sm ring-1 ring-orange-100 transition-shadow hover:shadow-md dark:bg-stone-900 dark:ring-stone-700 dark:hover:shadow-lg dark:hover:shadow-black/20"
+      className="scroll-mt-24 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-[#d9e9f2] transition-shadow hover:shadow-md dark:bg-neutral-900 dark:ring-neutral-700 dark:hover:shadow-lg dark:hover:shadow-black/20"
     >
-      <h2 className="text-xl font-bold text-orange-700 dark:text-orange-300">{title}</h2>
-      <p className="mt-1 text-sm text-gray-500 dark:text-stone-400">
+      <h2 className="text-xl font-bold text-[#3a00ff] dark:text-white">{title}</h2>
+      <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400">
         {new Date(event.startsAt).toLocaleString(locale === "hi" ? "hi-IN" : "en-IN", {
           timeZone: "Asia/Kolkata",
         })}{" "}
         — {event.placeText}
       </p>
-      <p className="mt-3 text-gray-700 dark:text-stone-300">{body}</p>
-      <p className="mt-2 text-sm font-medium text-orange-600 dark:text-orange-400">
+      <p className="mt-3 text-gray-700 dark:text-neutral-200">{body}</p>
+      <p className="mt-2 text-sm font-medium text-[#3a00ff] dark:text-white">
         {t("goingCount", { count: goingCount })}
       </p>
       {isLoggedIn && (
@@ -73,8 +73,8 @@ export function EventCard({ event, locale, userRsvp, isLoggedIn, shareUrl }: Eve
               aria-pressed={rsvp === s}
               className={`min-h-10 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 ${
                 rsvp === s
-                  ? "bg-orange-600 text-white shadow-sm"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-[0.98] dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700"
+                  ? "bg-[#3a00ff] text-white shadow-sm dark:bg-white dark:text-black"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-[0.98] dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
               }`}
             >
               {t(s === "not_going" ? "notGoing" : s)}

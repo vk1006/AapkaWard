@@ -36,12 +36,12 @@ export default async function IssuesPage({
         <ul className="space-y-3">
           {items.map((issue) => (
             <li key={issue.id} className={listCardClass}>
-              <span className="text-xs font-medium uppercase text-orange-600 dark:text-orange-400">
+              <span className="text-xs font-medium uppercase text-[#3a00ff] dark:text-white">
                 {issue.category} · {issue.lifecycle}
               </span>
-              <p className="mt-1 break-words dark:text-stone-200">{issue.body}</p>
+              <p className="mt-1 break-words dark:text-neutral-200">{issue.body}</p>
               {issue.landmark && (
-                <p className="mt-1 text-sm text-gray-500 dark:text-stone-400">{issue.landmark}</p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400">{issue.landmark}</p>
               )}
               <IssueMediaStrip media={issue.media} />
               <AdminCommentLedgerToggle

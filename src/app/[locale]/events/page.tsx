@@ -16,21 +16,23 @@ export default async function EventsPage({
   const origin = await getRequestOrigin();
 
   const { events } = getContainer();
-  const items = await events.listPublic();
+  const items = await events.listPublicWithCounts();
 
-  const enriched = await Promise.all(
-    items.map(async (e) => {
-      const full = await events.getById(e.id);
-      const userRsvp = user ? await events.getUserRsvp(e.id, user.id) : null;
-      return { ...full!, userRsvp };
-    })
-  );
+  const userRsvps = user && items.length > 0
+    ? await Promise.all(items.map((e) => events.getUserRsvp(e.id, user.id)))
+    : [];
+  const rsvpMap = new Map(userRsvps.filter(Boolean).map((r) => [r!.eventId, r]));
+
+  const enriched = items.map((event) => ({
+    ...event,
+    userRsvp: rsvpMap.get(event.id) ?? null,
+  }));
 
   return (
     <div className="space-y-6 pb-24">
       <h1 className="page-title">{t("title")}</h1>
       {enriched.length === 0 ? (
-        <p className="text-gray-600 dark:text-stone-400">No upcoming events.</p>
+        <p className="text-gray-600 dark:text-neutral-400">No upcoming events.</p>
       ) : (
         <div className="space-y-6">
           {enriched.map((event) => (

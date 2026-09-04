@@ -119,8 +119,8 @@ export default function AdminPagesPage() {
       <ul className="space-y-2">
         {items.map((item) => (
           <li key={item.id} className={`flex items-center justify-between ${listCardClass}`}>
-            <span className="text-gray-900 dark:text-stone-100">
-              <span className="font-mono text-sm text-gray-500 dark:text-stone-400">
+            <span className="text-gray-900 dark:text-white">
+              <span className="font-mono text-sm text-gray-500 dark:text-neutral-400">
                 {item.slug}
               </span>
               {" — "}

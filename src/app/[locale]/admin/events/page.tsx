@@ -170,12 +170,12 @@ export default function AdminEventsPage() {
           <li key={item.id} className={listCardClass}>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <strong className="text-orange-800 dark:text-orange-300">{item.titleHi}</strong>
+                <strong className="text-[#3a00ff] dark:text-white">{item.titleHi}</strong>
                 <p className={`mt-1 text-sm ${mutedTextClass}`}>
                   {new Date(item.startsAt).toLocaleString()} — {item.placeText}
                 </p>
                 {!item.published && (
-                  <span className="mt-1 inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-stone-700 dark:text-stone-300">
+                  <span className="mt-1 inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-neutral-700 dark:text-neutral-300">
                     Draft
                   </span>
                 )}
