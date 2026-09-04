@@ -50,7 +50,7 @@ export default async function AboutPage({
       )}
 
       <Link href="/manifesto" className={linkAccentClass}>
-        → Manifesto
+        {t("viewManifesto")}
       </Link>
     </div>
   );

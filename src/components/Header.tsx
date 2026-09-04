@@ -18,6 +18,7 @@ function isNavActive(pathname: string, href: string) {
 
 export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
   const t = useTranslations("nav");
+  const site = useTranslations("site");
   const pathname = usePathname();
   const { user, loading } = useAuth();
   const [open, setOpen] = useState(false);
@@ -98,7 +99,7 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
           href="/"
           className="rounded-md px-1 text-lg font-bold text-orange-700 transition-colors hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-500/30 dark:text-orange-300 dark:hover:text-orange-200"
         >
-          {t("home")}
+          {site("brand")}
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main">
@@ -201,11 +202,13 @@ export function Header({ issuesEnabled = false }: { issuesEnabled?: boolean }) {
 }
 
 export function PageShell({ children }: { children: React.ReactNode }) {
+  const site = useTranslations("site");
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-orange-50 text-gray-900 dark:bg-stone-950 dark:text-stone-100">
       {children}
       <footer className="mt-auto border-t border-orange-200 bg-white px-4 py-6 text-center text-sm text-gray-500 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-400">
-        Ward Campaign Platform
+        {site("footer")}
       </footer>
     </div>
   );

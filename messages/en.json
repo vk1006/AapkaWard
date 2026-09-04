@@ -1,4 +1,8 @@
 {
+  "site": {
+    "brand": "Aapka Ward",
+    "footer": "© Aapka Ward — for transparency, participation, and local development."
+  },
   "nav": {
     "home": "Home",
     "manifesto": "Manifesto",
@@ -11,11 +15,11 @@
     "issues": "Issues"
   },
   "home": {
-    "title": "Ward Election Campaign",
-    "subtitle": "Transparency, participation, and development",
+    "title": "Your Ward, Your Voice",
+    "subtitle": "Report ward issues, share suggestions, and take part in development — openly and accountably.",
     "ctaSuggestions": "Give a suggestion",
     "ctaEvents": "View events",
-    "promiseTitle": "100-day priorities"
+    "promiseTitle": "Our priorities"
   },
   "manifesto": {
     "title": "Manifesto",
@@ -85,12 +89,14 @@
     "recaptchaLegal": "This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply."
   },
   "about": {
-    "title": "About us"
+    "title": "About us",
+    "viewManifesto": "→ View manifesto"
   },
   "admin": {
     "title": "Admin",
     "moderation": "Moderation",
     "manifesto": "Manifesto",
+    "pages": "Pages",
     "events": "Events",
     "flags": "Features",
     "approve": "Approve",

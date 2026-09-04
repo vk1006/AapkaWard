@@ -8,8 +8,8 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Ward Campaign",
-  description: "Ward election campaign platform",
+  title: "Aapka Ward",
+  description: "Your ward, your voice — transparency, participation, and local development.",
   manifest: "/manifest.json",
 };
 

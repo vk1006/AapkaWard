@@ -7,6 +7,7 @@ const links = [
   { href: "/admin", labelKey: "dashboard" as const, exact: true },
   { href: "/admin/moderation", labelKey: "moderation" as const },
   { href: "/admin/manifesto", labelKey: "manifesto" as const },
+  { href: "/admin/pages", labelKey: "pages" as const },
   { href: "/admin/events", labelKey: "events" as const },
   { href: "/admin/flags", labelKey: "flags" as const },
 ];

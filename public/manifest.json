@@ -1,7 +1,7 @@
 {
-  "name": "Ward Campaign",
-  "short_name": "Ward",
-  "description": "Ward election campaign platform",
+  "name": "Aapka Ward",
+  "short_name": "Aapka Ward",
+  "description": "Your ward, your voice — transparency, participation, and local development.",
   "start_url": "/hi",
   "display": "standalone",
   "background_color": "#fff7ed",
